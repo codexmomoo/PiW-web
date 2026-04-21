@@ -1,0 +1,27 @@
+export default async function handler(req, res) {
+  const url = req.query.url;
+  if (!url) return res.status(400).json({ error: 'Missing URL' });
+  
+  const allowedDomains = [
+    'studyuk.site', 'api.penpencil.co', 'videos.penpencil.co',
+    'd1d34p8vz63oiq.cloudfront.net', 'pw.live'
+  ];
+  
+  try {
+    const parsed = new URL(url);
+    if (!allowedDomains.some(d => parsed.hostname.includes(d))) {
+      return res.status(403).json({ error: 'Domain not allowed' });
+    }
+    
+    const response = await fetch(url, {
+      headers: { ...req.headers, host: parsed.hostname }
+    });
+    
+    const buffer = await response.arrayBuffer();
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send(Buffer.from(buffer));
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+}
