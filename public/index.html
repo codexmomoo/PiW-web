@@ -734,16 +734,30 @@ async function openSubjects(batchId, batchName) {
   const g = document.getElementById('gs');
   g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
   
-  const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}`);
-  if (res.success && res.data?.subjects) {
-    const subjects = res.data.subjects;
-    g.innerHTML = subjects.map((s, i) => `<div class="rc" onclick="openTopics('${s.slug}','${esc(s.subject)}')">
-      <div class="rimgph">${['📗','📘','📙','📕'][i%4]}</div>
-      <div class="rtxt"><div class="rnm">${esc(s.subject)}</div><div class="rsub">Tap to view topics</div></div>
-      <div class="rpro">PRO</div>
-    </div>`).join('');
-  } else {
-    g.innerHTML = '<div class="empty"><h3>No Subjects</h3></div>';
+  try {
+    const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}`);
+    console.log('Subjects API Response:', res);
+    
+    if (res.success && res.data && res.data.subjects) {
+      const subjects = res.data.subjects;
+      if (subjects.length === 0) {
+        g.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No Subjects Found</h3><p>This batch may not have subjects yet.</p></div>';
+        return;
+      }
+      
+      g.innerHTML = subjects.map((s, i) => `<div class="rc" onclick="openTopics('${s.slug || s._id}','${esc(s.subject || s.name)}')">
+        <div class="rimgph">${['📗','📘','📙','📕'][i%4]}</div>
+        <div class="rtxt"><div class="rnm">${esc(s.subject || s.name)}</div><div class="rsub">Tap to view topics</div></div>
+        <div class="rpro">PRO</div>
+      </div>`).join('');
+    } else {
+      console.error('Unexpected response format:', res);
+      g.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to Load</h3><p>Check console for details.</p></div>';
+    }
+  } catch(e) {
+    console.error('Subjects error:', e);
+    g.innerHTML = '<div class="empty"><div class="empty-icon">❌</div><h3>Error</h3><p>Tap to retry</p></div>';
+    g.onclick = () => openSubjects(batchId, batchName);
   }
 }
 
