@@ -45,9 +45,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .bnt svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 
 /* LOGIN */
-#pgLogin{z-index:50;justify-content:center;align-items:center;padding:20px;overflow-y:auto;
-  background:radial-gradient(ellipse 100% 60% at 10% 0%,rgba(124,109,240,.2) 0%,transparent 50%),
-  radial-gradient(ellipse 60% 40% at 90% 100%,rgba(167,139,250,.12) 0%,transparent 50%),var(--bg)}
+#pgLogin{z-index:50;justify-content:center;align-items:center;padding:20px;overflow-y:auto;background:radial-gradient(ellipse 100% 60% at 10% 0%,rgba(124,109,240,.2) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 90% 100%,rgba(167,139,250,.12) 0%,transparent 50%),var(--bg)}
 .lb{width:100%;max-width:400px}
 .brand{text-align:center;margin-bottom:28px}
 .blogo{width:76px;height:76px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;color:#fff;box-shadow:0 16px 48px rgba(124,109,240,.45)}
@@ -96,7 +94,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .cc{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;margin-bottom:12px;cursor:pointer;position:relative;transition:border-color .2s,transform .15s}
 .cc:active{border-color:var(--acc);transform:scale(.985)}
 .cimg{width:100%;height:120px;object-fit:cover;display:block;background:var(--surf)}
-.cph{width:100%;height:120px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cph{width:100%;height:120px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:40px}
 .cbody{padding:12px 14px;display:flex;align-items:center;gap:10px}
 .cico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cnm{font-weight:700;font-size:13px;line-height:1.3}
@@ -112,8 +110,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .rc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .18s}
 .rc:active{border-color:var(--acc);background:var(--card2);transform:scale(.985)}
 .rnum{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--acc2)}
-.rimg{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--surf)}
-.rimgph{width:44px;height:44px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.rimgph{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
 .rtxt{flex:1}
 .rnm{font-weight:700;font-size:14px}
 .rsub{font-size:11px;color:var(--mut2);margin-top:2px}
@@ -122,8 +119,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 /* VIDEO LIST */
 .vc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:all .18s}
 .vc:active{border-color:var(--acc);transform:scale(.985)}
-.vth{width:90px;height:60px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--surf)}
-.vthph{width:90px;height:60px;border-radius:10px;flex-shrink:0;background:var(--card2);display:flex;align-items:center;justify-content:center;border:1px solid var(--bdr)}
+.vthph{width:90px;height:60px;border-radius:10px;flex-shrink:0;background:var(--card2);display:flex;align-items:center;justify-content:center;border:1px solid var(--bdr);font-size:24px}
 .vtxt{flex:1}
 .vnm{font-size:13px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .vdt{font-size:11px;color:var(--mut2);margin-top:4px;display:flex;align-items:center;gap:4px}
@@ -142,6 +138,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .pact{flex:1;padding:10px 6px;border-radius:12px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .18s}
 .pact:active{background:var(--acc);border-color:var(--acc);color:#fff;transform:scale(.95)}
 .pact.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(124,109,240,.3)}
+.pact:disabled{opacity:.3;cursor:not-allowed}
 
 /* PDF PANEL */
 .pdf-panel{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--bg)}
@@ -150,6 +147,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .pdf-tabs-wrap{display:flex;gap:6px;flex:1}
 .pdftab{flex:1;padding:8px;border:1px solid var(--bdr2);border-radius:9px;background:var(--card);color:var(--mut2);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
 .pdftab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.pdftab:disabled{opacity:.3;cursor:not-allowed}
 .pdf-close-btn{width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mut2)}
 .pdf-frame-wrap{flex:1;overflow:hidden;min-height:100px}
 .pdf-frame-wrap iframe{width:100%;height:100%;border:none;background:#fff}
@@ -167,9 +165,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .qbtns{display:flex;gap:8px;flex-wrap:wrap}
 .qbtn{background:var(--card);border:1px solid var(--bdr2);border-radius:11px;padding:10px 18px;color:var(--txt);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
 .qbtn:active{background:var(--acc);border-color:var(--acc);color:#fff}
-.pdfbtns{display:flex;gap:8px}
-.pdfbtn{flex:1;background:var(--card);border:1px solid var(--bdr2);border-radius:12px;padding:12px;color:var(--txt);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.pdfbtn:active{background:var(--acc);border-color:var(--acc);color:#fff}
 .mcancel{width:100%;margin-top:8px;padding:13px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;color:var(--mut2);font-size:13px;cursor:pointer;font-weight:600}
 
 /* NOTICE */
@@ -177,6 +172,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .notice-box{background:var(--surf);border:1px solid var(--bdr2);border-radius:22px;width:100%;max-width:360px;animation:popIn .35s ease}
 .notice-header{padding:20px 20px 0;text-align:center}
 .notice-icon{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 24px rgba(124,109,240,.4)}
+.notice-icon svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2}
 .notice-title{font-weight:800;font-size:17px;margin-bottom:8px}
 .notice-msg{font-size:13px;color:var(--mut2);line-height:1.6;padding:0 4px}
 .notice-footer{padding:16px 20px 20px}
@@ -196,10 +192,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .skel{background:linear-gradient(90deg,var(--card) 25%,var(--bdr) 50%,var(--card) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:14px}
 .sk-c{height:170px;margin-bottom:12px}
 .sk-r{height:70px;margin-bottom:10px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--bdr2);border-radius:12px;padding:11px 18px;font-size:13px;font-weight:500;z-index:500;transition:transform .25s,opacity .25s;white-space:nowrap;box-shadow:var(--shadow);opacity:0;display:flex;align-items:center;gap:8px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--bdr2);border-radius:12px;padding:11px 18px;font-size:13px;font-weight:500;z-index:500;transition:transform .25s,opacity .25s;white-space:nowrap;box-shadow:var(--shadow);opacity:0;display:flex;align-items:center;gap:8px;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;display:inline-block}
 #lmbtn{display:block;width:100%;padding:13px;background:var(--card);border:1px solid var(--bdr2);border-radius:13px;color:var(--acc2);font-weight:700;font-size:13px;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+#lmbtn:disabled{opacity:.5;cursor:not-allowed}
 .lpill{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.2);border-radius:13px;padding:12px 14px;margin-bottom:14px;cursor:pointer}
 .ldot{width:8px;height:8px;background:#ff6b35;border-radius:50%;animation:pulse 1.4s infinite}
 .ltxt{font-weight:700;font-size:13px;color:#ff6b35}
@@ -228,7 +225,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
       <div class="notice-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       </div>
-      <div class="notice-title" id="noticeTitle">Notice</div>
+      <div class="notice-title" id="noticeTitle">Welcome</div>
       <div class="notice-msg" id="noticeMsg">Loading...</div>
     </div>
     <div class="notice-footer">
@@ -247,7 +244,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
   </div>
   <div class="login-hint">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-    <p><strong>Use the same mobile number</strong> registered on Physics Wallah app. OTP will be sent via PW server.</p>
+    <p><strong>Use the same mobile number</strong> registered on Physics Wallah app.</p>
   </div>
   <div class="lcard">
     <div class="ig">
@@ -494,7 +491,7 @@ const CONFIG = {
   maintenanceMsg: "We're upgrading the platform. Back soon!",
   notice: true,
   noticeTitle: "Welcome to PW Web Player",
-  noticeMsg: "Use the same mobile number registered on Physics Wallah app. OTP will be sent via PW server.",
+  noticeMsg: "Use the same mobile number registered on Physics Wallah app.",
   noticeDismissable: true,
 };
 
@@ -533,14 +530,24 @@ function toast(msg, type='') {
 // ===== API CALLS =====
 async function apiCall(url, options = {}) {
   try {
-    const headers = {
-      'client-id': '5eb393ee95fab7468a79d189',
-      'user-agent': 'Android',
-      ...options.headers
-    };
+    const headers = { ...options.headers };
     if (W.token) headers['Authorization'] = `Bearer ${W.token}`;
+    headers['client-id'] = '5eb393ee95fab7468a79d189';
+    headers['Content-Type'] = 'application/json';
     
-    const res = await fetch(url, { ...options, headers });
+    let finalUrl = url;
+    if (url.includes('studyuk.site') || url.includes('api.penpencil.co')) {
+      finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+    }
+    
+    const fetchOptions = { 
+      method: options.method || 'GET',
+      headers: options.method === 'GET' ? {} : headers
+    };
+    
+    if (options.body) fetchOptions.body = JSON.stringify(options.body);
+    
+    const res = await fetch(finalUrl, fetchOptions);
     const text = await res.text();
     try { return JSON.parse(text); }
     catch { return { success: false, message: text }; }
@@ -550,7 +557,6 @@ async function apiCall(url, options = {}) {
 }
 
 // ===== AUTH =====
-let otpSent = false;
 let otpCooldown = 0;
 
 async function sendOTP() {
@@ -567,33 +573,27 @@ async function sendOTP() {
   
   const res = await apiCall('https://studyuk.site/pw/login/get-otp', {
     method: 'POST',
-    body: JSON.stringify({ phone_number: mobile })
+    body: { phone_number: mobile }
   });
   
   if (res.success) {
-    otpSent = true;
     toast('OTP sent successfully!', 'ok');
-    startOtpCooldown();
+    otpCooldown = 30;
+    const timer = setInterval(() => {
+      otpCooldown--;
+      btn.textContent = `Resend (${otpCooldown}s)`;
+      if (otpCooldown <= 0) {
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.textContent = 'Send OTP';
+      }
+    }, 1000);
   } else {
     document.getElementById('loginError').classList.add('on');
     document.getElementById('loginError').textContent = res.message || 'Failed to send OTP';
     btn.disabled = false;
     btn.textContent = 'Send OTP';
   }
-}
-
-function startOtpCooldown() {
-  otpCooldown = 30;
-  const btn = document.getElementById('sendOtpBtn');
-  const timer = setInterval(() => {
-    otpCooldown--;
-    btn.textContent = `Resend (${otpCooldown}s)`;
-    if (otpCooldown <= 0) {
-      clearInterval(timer);
-      btn.disabled = false;
-      btn.textContent = 'Send OTP';
-    }
-  }, 1000);
 }
 
 async function verifyOTP() {
@@ -613,7 +613,7 @@ async function verifyOTP() {
   
   const res = await apiCall('https://studyuk.site/pw/login/verify-otp', {
     method: 'POST',
-    body: JSON.stringify({ phone_number: mobile, otp })
+    body: { phone_number: mobile, otp }
   });
   
   if (res.success) {
@@ -634,8 +634,7 @@ async function verifyOTP() {
 
 function showSetup() {
   const mobile = W.mobile || '';
-  const initial = 'P';
-  document.getElementById('setupAva').textContent = initial;
+  document.getElementById('setupAva').textContent = 'P';
   document.getElementById('setupName').textContent = 'PW Student';
   document.getElementById('setupMobile').textContent = mobile;
   show('pgSetup');
@@ -653,8 +652,7 @@ function goHome() {
 
 function loadProf() {
   const mobile = W.mobile || '';
-  const initial = 'P';
-  ['pava', 'sava', 'avabtn'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = initial; });
+  ['pava', 'sava', 'avabtn'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = 'P'; });
   ['pname', 'snm'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = 'PW Student'; });
   ['pmobile', 'smobile'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = mobile; });
   document.getElementById('htitle').textContent = 'Physics Wallah';
@@ -672,8 +670,10 @@ async function loadBatches(reset) {
   if (res.success && res.batches) {
     if (reset) W.batches = res.batches;
     else W.batches = [...W.batches, ...res.batches];
-    W.hasMore = res.batches.length >= 10 && W.batchPage < (res.totalPages || 999);
+    W.hasMore = res.batches.length >= 10;
     renderBatches();
+  } else {
+    if (reset) g.innerHTML = '<div class="empty"><h3>No Batches</h3></div>';
   }
   updateLoadMore();
 }
@@ -681,23 +681,24 @@ async function loadBatches(reset) {
 function renderBatches() {
   const g = document.getElementById('g0');
   const favs = JSON.parse(localStorage.getItem('pw_fav_batches') || '{}');
+  const filtered = W.batches.filter(b => !W.searchQuery || b.name.toLowerCase().includes(W.searchQuery.toLowerCase()) || (b.byName||'').toLowerCase().includes(W.searchQuery.toLowerCase()));
   
-  if (!W.batches.length) {
-    g.innerHTML = '<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/></svg></div><h3>No Batches</h3></div>';
+  if (!filtered.length) {
+    g.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No Batches Found</h3></div>';
     return;
   }
   
-  g.innerHTML = W.batches.filter(b => !W.searchQuery || b.name.toLowerCase().includes(W.searchQuery.toLowerCase()) || (b.byName||'').toLowerCase().includes(W.searchQuery.toLowerCase()))
-    .map(b => {
-      const isFav = !!favs[b._id];
-      return `<div class="cc" onclick="openSubjects('${b._id}','${esc(b.name)}')">
-        ${b.previewImage ? `<img class="cimg" src="${esc(b.previewImage)}" loading="lazy">` : '<div class="cph">📚</div>'}
-        <button class="fav-btn ${isFav?'active':''}" onclick="event.stopPropagation();toggleFavBatch('${b._id}','${esc(b.name)}','${esc(b.previewImage||'')}',this)">
-          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        </button>
-        <div class="cbody"><div class="cico" style="background:var(--acc);opacity:.2"></div><div style="flex:1"><div class="cnm">${esc(b.name)}</div><div class="cmeta">${esc(b.byName||'Physics Wallah')}</div></div><div class="carrow">›</div></div>
-      </div>`;
-    }).join('');
+  g.innerHTML = filtered.map(b => {
+    const isFav = !!favs[b._id];
+    return `<div class="cc" onclick="openSubjects('${b._id}','${esc(b.name)}')">
+      ${b.previewImage ? `<img class="cimg" src="${esc(b.previewImage)}" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="cph" style="${b.previewImage ? 'display:none' : ''}">📚</div>
+      <button class="fav-btn ${isFav?'active':''}" onclick="event.stopPropagation();toggleFavBatch('${b._id}','${esc(b.name)}','${esc(b.previewImage||'')}',this)">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </button>
+      <div class="cbody"><div class="cico" style="background:var(--acc);opacity:.2">📘</div><div style="flex:1"><div class="cnm">${esc(b.name)}</div><div class="cmeta">${esc(b.byName||'Physics Wallah')}</div></div><div class="carrow">›</div></div>
+    </div>`;
+  }).join('');
 }
 
 function toggleFavBatch(id, name, img, btn) {
@@ -711,16 +712,17 @@ function toggleFavBatch(id, name, img, btn) {
 function loadFavs() {
   const favs = Object.values(JSON.parse(localStorage.getItem('pw_fav_batches') || '{}'));
   const g = document.getElementById('g2');
-  if (!favs.length) { g.innerHTML = '<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><h3>No Saved Batches</h3></div>'; return; }
-  g.innerHTML = favs.map(b => `<div class="cc" onclick="openSubjects('${b.id}','${esc(b.name)}')"><div class="cph">📚</div><div class="cbody"><div class="cico" style="background:var(--acc);opacity:.2"></div><div style="flex:1"><div class="cnm">${esc(b.name)}</div></div><div class="carrow">›</div></div></div>`).join('');
+  if (!favs.length) { g.innerHTML = '<div class="empty"><div class="empty-icon">❤️</div><h3>No Saved Batches</h3></div>'; return; }
+  g.innerHTML = favs.map(b => `<div class="cc" onclick="openSubjects('${b.id}','${esc(b.name)}')"><div class="cph">📚</div><div class="cbody"><div class="cico" style="background:var(--acc);opacity:.2">📘</div><div style="flex:1"><div class="cnm">${esc(b.name)}</div></div><div class="carrow">›</div></div></div>`).join('');
 }
 
 function srch(q) { W.searchQuery = q; renderBatches(); }
+function fbatch(q) { /* enrolled batches search */ }
 function lmc() { if (W.hasMore) loadBatches(false); else toast('All batches loaded!', 'ok'); }
 function updateLoadMore() {
   const btn = document.getElementById('lmbtn');
-  if (!W.hasMore) { btn.innerHTML = '✓ All Loaded'; btn.disabled = true; btn.style.opacity = '0.6'; }
-  else { btn.innerHTML = 'Load More ↓'; btn.disabled = false; btn.style.opacity = '1'; }
+  if (!W.hasMore) { btn.innerHTML = '✓ All Loaded'; btn.disabled = true; }
+  else { btn.innerHTML = 'Load More ↓'; btn.disabled = false; }
 }
 
 // ===== SUBJECTS =====
@@ -756,7 +758,6 @@ async function openTopics(subjectSlug, subjectName) {
   
   const res = await apiCall(`https://api.penpencil.co/v2/batches/${W.currentBatch.id}/subject/${subjectSlug}/topics?page=1`);
   if (res.success && res.data) {
-    W.currentTopics = res.data;
     g.innerHTML = res.data.map((t, i) => `<div class="rc" onclick="openContent('${t._id}','${esc(t.name)}')">
       <div class="rnum">${String(i+1).padStart(2,'0')}</div>
       <div class="rtxt"><div class="rnm">${esc(t.name)}</div><div class="rsub">📹 ${t.lectureVideos||t.videos||0} Videos • 📝 ${t.notes||0} Notes</div></div>
@@ -785,8 +786,8 @@ async function loadContent() {
   
   if (res.success && res.data) {
     if (W.currentContentType === 0) {
-      g.innerHTML = res.data.map(v => `<div class="vc" onclick="openVideo('${v._id}','${esc(v.title||v.topic)}','${v.scheduleId}')">
-        <div class="vthph">▶</div>
+      g.innerHTML = res.data.map(v => `<div class="vc" onclick="openVideo('${v._id}','${esc(v.title||v.topic)}','${v.scheduleId||v._id}')">
+        <div class="vthph">▶️</div>
         <div class="vtxt"><div class="vnm">${esc(v.title||v.topic)}</div><div class="vdt">Tap to play</div></div>
       </div>`).join('');
     } else if (W.currentContentType === 1) {
@@ -834,7 +835,7 @@ async function openVideo(videoId, title, scheduleId) {
   toast('Loading video...');
   const res = await apiCall(`https://studyuk.site/pw/api/get-video-url?batch_id=${W.currentBatch.id}&childId=${scheduleId || videoId}`);
   if (res.success && res.url) {
-    W.currentVideo = { url: res.url, title, scheduleId, qualities: {} };
+    W.currentVideo = { url: res.url, title, scheduleId };
     showQModal(title, res.url);
   } else {
     toast('Failed to load video', 'er');
@@ -891,9 +892,11 @@ function switchPdfTab(type) {
 }
 
 function closePdfPanel() { document.getElementById('pdfPanel').classList.add('hidden'); document.getElementById('pdfFrame').src = ''; }
+function toggleFavVideo() { toast('Favorite toggled', 'ok'); }
 
 // ===== LIVE =====
 async function goLive() {
+  if (!W.currentBatch) { toast('Select a batch first', 'er'); return; }
   show('pgLive');
   const g = document.getElementById('gl');
   g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
@@ -940,7 +943,6 @@ function swtab(n) {
   W.tab = n;
   for(let i=0;i<4;i++) { document.getElementById('bn'+i)?.classList.toggle('on', i===n); }
   ['t0','t1','t2','t3'].forEach((id,i) => { const el = document.getElementById(id); if(el) el.style.display = i===n ? 'block' : 'none'; });
-  if (n === 1 && W.batches.length === 0) loadBatches(true);
   if (n === 2) loadFavs();
 }
 
