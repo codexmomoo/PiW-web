@@ -770,15 +770,22 @@ async function openTopics(subjectSlug, subjectName) {
   const g = document.getElementById('gt');
   g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
   
-  const res = await apiCall(`https://api.penpencil.co/v2/batches/${W.currentBatch.id}/subject/${subjectSlug}/topics?page=1`);
-  if (res.success && res.data) {
+  const url = `https://api.penpencil.co/v2/batches/${W.currentBatch.id}/subject/${subjectSlug}/topics?page=1`;
+  const res = await apiCall(url);
+  
+  if (res.success && Array.isArray(res.data)) {
+    if (res.data.length === 0) {
+      g.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No Topics Found</h3></div>';
+      return;
+    }
+    
     g.innerHTML = res.data.map((t, i) => `<div class="rc" onclick="openContent('${t._id}','${esc(t.name)}')">
       <div class="rnum">${String(i+1).padStart(2,'0')}</div>
-      <div class="rtxt"><div class="rnm">${esc(t.name)}</div><div class="rsub">📹 ${t.lectureVideos||t.videos||0} Videos • 📝 ${t.notes||0} Notes</div></div>
+      <div class="rtxt"><div class="rnm">${esc(t.name)}</div><div class="rsub">Tap to view content</div></div>
       <div class="carrow">›</div>
     </div>`).join('');
   } else {
-    g.innerHTML = '<div class="empty"><h3>No Topics</h3></div>';
+    g.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to Load</h3></div>';
   }
 }
 
