@@ -3,1328 +3,964 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PW Player • Physics Wallah</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>PW Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 :root{
-  --bg:#0a0a0f;--surf:#121218;--card:#181820;--card2:#202028;
-  --bdr:#282830;--bdr2:#303038;
-  --acc:#7c6df0;--acc2:#a78bfa;--acc3:#5b4fd4;
-  --txt:#eeeef5;--mut:#6a6a80;--mut2:#8a8aa0;
-  --ok:#4ade80;--err:#f87171;--warn:#fbbf24;
+  --bg:#0d0d0d;--surf:#161616;--card:#1c1c1c;--card2:#222;
+  --bdr:#2a2a2a;--bdr2:#333;
+  --acc:#ff6b35;--acc2:#ff8c5a;
+  --blue:#4f8ef7;
+  --txt:#f0f0f0;--txt2:#a0a0a0;--txt3:#606060;
+  --ok:#22c55e;--err:#ef4444;--warn:#f59e0b;
+  --r:14px;--rs:10px;--rl:20px;
 }
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;overflow:hidden}
 
-/* PAGES */
 .page{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:1}
-.page.active{display:flex!important;z-index:10}
+.page.active{display:flex!important;z-index:10;animation:fadeUp .2s ease}
 .page.base{display:flex!important;z-index:1}
-@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.page.active{animation:pgIn .22s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* TOPBAR */
-.tb{background:var(--surf);border-bottom:1px solid var(--bdr);padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.tb-l{display:flex;align-items:center;gap:10px;flex:1}
-.bk{width:36px;height:36px;background:var(--card);border:1px solid var(--bdr2);border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mut2);flex-shrink:0}
-.bk:active{background:var(--acc);border-color:var(--acc);color:#fff}
-.bk svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
-.tb-title{font-weight:700;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ava{width:36px;height:36px;border-radius:50%;border:2px solid var(--acc);cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));font-weight:800;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tb{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.tb-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:36px;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txt2);flex-shrink:0;transition:all .15s}
+.ib:active{background:var(--acc);border-color:var(--acc);color:#fff}
+.ib svg{width:18px;height:18px}
 
-/* SCROLL CONTAINER */
-.sc{flex:1;overflow-y:auto;padding:14px;padding-bottom:90px}
+.sc{flex:1;overflow-y:auto;overscroll-behavior:contain}
 .sc::-webkit-scrollbar{display:none}
+.sc-p{padding:16px;padding-bottom:88px}
 
-/* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);display:flex;z-index:20}
-.bnt{flex:1;padding:11px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:transparent;color:var(--mut);font-size:10px;font-weight:600;border:none}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);display:flex;height:60px;z-index:20}
+.bnt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent;color:var(--txt3);font-size:10px;font-weight:600;border:none;letter-spacing:.3px;transition:color .15s}
+.bnt svg{width:22px;height:22px}
 .bnt.on{color:var(--acc)}
-.bnt-icon{font-size:20px;line-height:1}
 
 /* LOGIN */
-#pgLogin{z-index:50;justify-content:center;align-items:center;padding:20px;background:radial-gradient(ellipse 100% 60% at 10% 0%,rgba(124,109,240,.2) 0%,transparent 50%),var(--bg)}
-.lb{width:100%;max-width:400px}
-.brand{text-align:center;margin-bottom:28px}
-.blogo{width:76px;height:76px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;color:#fff;box-shadow:0 16px 48px rgba(124,109,240,.45)}
-.brand h1{font-size:26px;font-weight:800}
-.brand h1 span{color:var(--acc2)}
-.brand p{font-size:13px;color:var(--mut2);margin-top:6px}
-.login-hint{background:rgba(124,109,240,.08);border:1px solid rgba(124,109,240,.2);border-radius:12px;padding:11px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
-.login-hint svg{flex-shrink:0;width:16px;height:16px;margin-top:1px;color:var(--acc2)}
-.login-hint p{font-size:12px;color:var(--mut2);line-height:1.5}
-.lcard{background:var(--surf);border:1px solid var(--bdr2);border-radius:22px;padding:22px}
-.ig{margin-bottom:14px}
-.ig label{display:block;font-size:10px;color:var(--mut2);margin-bottom:6px;text-transform:uppercase;font-weight:700;letter-spacing:.5px}
-.ig input{width:100%;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:13px 15px;color:var(--txt);font-size:15px;outline:none;transition:border-color .2s}
-.ig input:focus{border-color:var(--acc);background:var(--card2)}
-.otp-row{display:flex;gap:8px}
-.otp-row .ig{flex:1;margin-bottom:0}
-.otp-btn{background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:0 16px;color:var(--acc2);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
-.otp-btn:disabled{opacity:.5;cursor:not-allowed}
-.lbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:13px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:14px;transition:opacity .2s}
-.lbtn:disabled{opacity:.5;cursor:not-allowed}
-.emsg{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:10px 13px;color:var(--err);font-size:13px;margin-top:10px;display:none}
-.emsg.on{display:block}
+#pgLogin{justify-content:center;align-items:center;padding:24px;z-index:50}
+#pgLogin::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,107,53,.07) 0%,transparent 70%);pointer-events:none}
+.lw{width:100%;max-width:420px;position:relative;z-index:1}
+.brand{text-align:center;margin-bottom:32px}
+.brand-logo{width:68px;height:68px;margin:0 auto 14px;border-radius:18px;background:var(--acc);display:flex;align-items:center;justify-content:center;box-shadow:0 0 36px rgba(255,107,53,.3)}
+.brand-logo svg{width:34px;height:34px;color:#fff}
+.brand h1{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.4px}
+.brand h1 span{color:var(--acc)}
+.brand p{font-size:13px;color:var(--txt2);margin-top:4px}
+.notice{background:rgba(255,107,53,.05);border:1px solid rgba(255,107,53,.14);border-radius:12px;padding:12px 14px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start}
+.notice svg{width:15px;height:15px;color:var(--acc);flex-shrink:0;margin-top:1px}
+.notice p{font-size:12.5px;color:var(--txt2);line-height:1.5}
+.lcard{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--rl);padding:22px}
+.fld{margin-bottom:15px}
+.fld label{display:block;font-size:10.5px;font-weight:700;color:var(--txt3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.6px}
+.fld input{width:100%;background:var(--card);border:1.5px solid var(--bdr2);border-radius:var(--rs);padding:13px 14px;color:var(--txt);font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.fld input:focus{border-color:var(--acc)}
+.fld input::placeholder{color:var(--txt3)}
+.otp-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:15px}
+.otp-row .fld{flex:1;margin:0}
+.send-btn{height:46px;padding:0 16px;background:var(--card);border:1.5px solid var(--bdr2);border-radius:var(--rs);color:var(--acc);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif}
+.send-btn:disabled{opacity:.45;cursor:not-allowed}
+.login-btn{width:100%;height:50px;background:var(--acc);border:none;border-radius:var(--rs);color:#fff;font-weight:700;font-size:15px;font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.login-btn:disabled{opacity:.5}
+.err{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:9px;padding:10px 13px;color:var(--err);font-size:13px;margin-top:12px;display:none}
+.err.show{display:block}
 
-/* PROFILE SETUP */
-#pgSetup{z-index:60;justify-content:center;align-items:center;padding:24px;background:radial-gradient(ellipse 80% 60% at 80% 90%,rgba(124,109,240,.15) 0%,transparent 55%),var(--bg)}
-.setup-box{width:100%;max-width:400px;text-align:center}
-.setup-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;color:#fff;margin:0 auto 18px;box-shadow:0 0 0 6px rgba(124,109,240,.15)}
-.setup-box h2{font-size:22px;font-weight:800;margin-bottom:6px}
-.setup-box>p{font-size:13px;color:var(--mut2);margin-bottom:20px}
-.setup-card{background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;padding:18px;text-align:left}
-.setup-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
-.setup-row:last-child{border-bottom:none}
-.setup-icon{width:36px;height:36px;border-radius:10px;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.setup-lbl{font-size:10px;color:var(--mut2);font-weight:700;text-transform:uppercase}
-.setup-val{font-size:14px;font-weight:600;margin-top:2px}
-.setup-cont{width:100%;padding:15px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:13px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:18px}
+/* SETUP */
+#pgSetup{justify-content:center;align-items:center;padding:24px;z-index:60}
+.sw{width:100%;max-width:400px;text-align:center}
+.sw-ava{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 0 0 8px rgba(255,107,53,.1)}
+.sw-ava svg{width:40px;height:40px;color:#fff}
+.sw h2{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;margin-bottom:5px}
+.sw>p{font-size:13px;color:var(--txt2);margin-bottom:22px}
+.sw-card{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--rl);padding:6px;text-align:left;margin-bottom:18px}
+.sw-row{display:flex;align-items:center;gap:12px;padding:13px 14px}
+.sw-row+.sw-row{border-top:1px solid var(--bdr)}
+.sw-icon{width:38px;height:38px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sw-icon svg{width:17px;height:17px;color:var(--acc)}
+.sw-lbl{font-size:10.5px;color:var(--txt3);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.sw-val{font-size:14px;font-weight:600;margin-top:2px}
+.cont-btn{width:100%;height:50px;background:var(--acc);border:none;border-radius:var(--rs);color:#fff;font-weight:700;font-size:15px;font-family:'Inter',sans-serif;cursor:pointer}
 
 /* BATCH CARDS */
-.cc{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;margin-bottom:12px;cursor:pointer;position:relative;transition:border-color .2s}
-.cc:active{border-color:var(--acc)}
-.cimg{width:100%;height:120px;object-fit:cover;background:var(--surf);display:block}
-.cph{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--surf)}
-.cbody{padding:12px 14px;display:flex;align-items:center;gap:10px}
-.cbody-icon{font-size:20px;flex-shrink:0}
-.cbody-info{flex:1;min-width:0}
-.cnm{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cmeta{font-size:11px;color:var(--mut2);margin-top:2px}
-.carrow{color:var(--mut);font-size:18px;flex-shrink:0}
-.fav-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.6);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:2;transition:transform .2s}
-.fav-btn.active{background:rgba(248,113,113,.2)}
-.fav-btn:active{transform:scale(.9)}
+.bc{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;margin-bottom:12px}
+.bc:active{border-color:var(--acc)}
+.bc-img{width:100%;height:128px;object-fit:cover;display:block;background:var(--card2)}
+.bc-ph{width:100%;height:128px;background:var(--card2);display:flex;align-items:center;justify-content:center}
+.bc-ph svg{width:36px;height:36px;color:var(--txt3)}
+.bc-body{padding:12px 14px;display:flex;align-items:center;gap:10px}
+.bc-info{flex:1;min-width:0}
+.bc-name{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc-faculty{font-size:11.5px;color:var(--txt2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc-arr svg{width:18px;height:18px;color:var(--txt3)}
+.fav{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.fav svg{width:15px;height:15px;color:#fff}
+.fav.on svg{color:var(--err);fill:var(--err)}
 
 /* ROW CARDS */
-.rc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .2s}
+.rc{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px}
 .rc:active{border-color:var(--acc)}
-.rnum{width:36px;height:36px;border-radius:10px;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--acc2);flex-shrink:0}
-.rimgph{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.rtxt{flex:1;min-width:0}
-.rnm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rsub{font-size:11px;color:var(--mut2);margin-top:2px}
-.rbadge{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0}
+.ri{width:40px;height:40px;border-radius:11px;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ri svg{width:19px;height:19px;color:var(--txt2)}
+.ri.acc{background:rgba(255,107,53,.1)}
+.ri.acc svg{color:var(--acc)}
+.rn{width:40px;height:40px;border-radius:11px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--txt3);flex-shrink:0}
+.rt{flex:1;min-width:0}
+.rnm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rsb{font-size:12px;color:var(--txt2);margin-top:3px}
+.rbdg{background:rgba(79,142,247,.1);color:var(--blue);font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;flex-shrink:0}
+.rarr svg{width:16px;height:16px;color:var(--txt3)}
 
-/* VIDEO LIST */
-.vc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:border-color .2s}
+/* VIDEO CARDS */
+.vc{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:12px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center}
 .vc:active{border-color:var(--acc)}
-.vthph{width:90px;height:60px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.vtxt{flex:1;min-width:0}
-.vnm{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vmeta{font-size:11px;color:var(--mut2);margin-top:3px}
+.vth{width:96px;height:60px;border-radius:9px;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative}
+.vth img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.vpi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+.vpi svg{width:20px;height:20px;color:#fff}
+.vt{flex:1;min-width:0}
+.vn{font-size:13px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vm{font-size:11px;color:var(--txt2);margin-top:4px}
+
+/* SECTION HEADER */
+.sh{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.7px;margin:16px 0 10px}
+.sh:first-child{margin-top:0}
+
+/* SEARCH */
+.srch{position:relative;margin-bottom:16px}
+.srch svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--txt3);pointer-events:none}
+.srch input{width:100%;background:var(--card);border:1.5px solid var(--bdr2);border-radius:var(--rs);padding:12px 14px 12px 38px;color:var(--txt);font-size:14px;font-family:'Inter',sans-serif;outline:none}
+.srch input:focus{border-color:var(--acc)}
+.srch input::placeholder{color:var(--txt3)}
+
+/* LOAD MORE */
+.lmbtn{width:100%;height:44px;background:var(--card);border:1px solid var(--bdr2);border-radius:var(--rs);color:var(--txt2);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.lmbtn svg{width:15px;height:15px}
+.lmbtn:disabled{opacity:.4;cursor:not-allowed}
+
+/* CONTENT TABS */
+.ctabs{display:flex;gap:8px;padding:12px 16px;background:var(--surf);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.ctab{flex:1;height:36px;border:1px solid var(--bdr2);border-radius:9px;background:var(--card);color:var(--txt2);font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.ctab svg{width:13px;height:13px}
+.ctab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* LIVE PILL */
+.lvpill{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,.05);border:1px solid rgba(255,107,53,.14);border-radius:12px;padding:12px 14px;margin-bottom:16px;cursor:pointer}
+.lvdot{width:8px;height:8px;background:var(--acc);border-radius:50%;animation:blink 1.4s infinite;flex-shrink:0}
+.lvtxt{font-size:13px;font-weight:600;color:var(--acc)}
+.lvarr{margin-left:auto}
+.lvarr svg{width:15px;height:15px;color:var(--acc)}
+.lv-tag{font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;text-transform:uppercase}
+.lv-tag.live{background:rgba(239,68,68,.12);color:var(--err)}
+.lv-tag.upcoming{background:rgba(245,158,11,.12);color:var(--warn)}
+.lv-tag.ended{background:var(--card2);color:var(--txt3)}
 
 /* PLAYER */
 #pgPlayer{background:#000}
-.player-tb{background:rgba(0,0,0,.9);padding:11px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-#vplayer{width:100%;display:block;max-height:240px;background:#000}
-.player-body{flex:1;overflow-y:auto;background:var(--bg)}
-.player-body::-webkit-scrollbar{display:none}
-.player-info{padding:14px 16px}
-.player-title{font-weight:700;font-size:15px;line-height:1.4}
-.player-acts{display:flex;gap:8px;margin-top:14px}
-.pact{flex:1;padding:10px;border-radius:12px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);font-size:11px;font-weight:600;cursor:pointer;transition:opacity .2s}
-.pact.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;color:#fff}
-.pact:disabled{opacity:.35;cursor:not-allowed}
+.ptb{background:rgba(0,0,0,.9);height:52px;padding:0 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.ptb .tb-title{color:#fff;font-size:14px}
+.ptb .ib{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);color:#fff}
+#vplayer{width:100%;display:block;background:#000;max-height:236px}
+.pscroll{flex:1;overflow-y:auto}
+.pscroll::-webkit-scrollbar{display:none}
+.pinfo{padding:16px}
+.ptitle{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;line-height:1.4}
+.pacts{display:flex;gap:8px;margin-top:14px}
+.pab{flex:1;height:40px;border-radius:10px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.pab svg{width:14px;height:14px}
+.pab.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.pab:disabled{opacity:.35;cursor:not-allowed}
 
 /* PDF PANEL */
-.pdf-panel{display:none;flex-direction:column;background:var(--bg);min-height:300px}
+.pdf-panel{display:none;flex-direction:column;border-top:1px solid var(--bdr)}
 .pdf-panel.show{display:flex}
-.pdf-topbar{display:flex;padding:10px 14px;background:var(--surf);gap:8px;align-items:center;border-top:1px solid var(--bdr)}
-.pdftab{flex:1;padding:8px;border:1px solid var(--bdr2);border-radius:9px;background:var(--card);color:var(--mut2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
-.pdftab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.pdf-close{width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--bdr2);color:var(--mut2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.pdf-frame{width:100%;height:280px;border:none;background:#fff}
+.pdf-tb{display:flex;gap:8px;padding:10px 14px;background:var(--surf);align-items:center}
+.pdf-tab{flex:1;height:34px;border:1px solid var(--bdr2);border-radius:9px;background:var(--card);color:var(--txt2);font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer}
+.pdf-tab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.pdf-close{width:30px;height:30px;border-radius:8px;background:var(--card);border:1px solid var(--bdr2);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pdf-close svg{width:13px;height:13px}
+.pdf-frame{width:100%;height:300px;border:none;background:#fff}
 
-/* CONTENT TABS */
-.ctabs{display:flex;padding:10px 14px;gap:8px;background:var(--surf);border-bottom:1px solid var(--bdr);flex-shrink:0}
-
-/* LIVE PILLS */
-.lpill{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.2);border-radius:13px;padding:12px 14px;margin-bottom:14px;cursor:pointer}
-.ldot{width:8px;height:8px;background:#ff6b35;border-radius:50%;animation:pulse 1.4s infinite;flex-shrink:0}
-.ltxt{font-weight:700;font-size:13px;color:#ff6b35}
-
-/* LIVE TAG */
-.live-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase}
-.live-tag.live{background:rgba(248,113,113,.2);color:var(--err)}
-.live-tag.upcoming{background:rgba(251,191,36,.15);color:var(--warn)}
-.live-tag.ended{background:var(--card2);color:var(--mut2)}
-
-/* MODALS */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:flex;align-items:flex-end;justify-content:center}
-.modal-box{background:var(--surf);border-radius:24px 24px 0 0;width:100%;max-width:480px;border:1px solid var(--bdr2);animation:sheetUp .28s ease}
-@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mhandle{width:40px;height:4px;background:var(--bdr2);border-radius:2px;margin:12px auto 0}
-.mhead{padding:16px 20px 10px}
-.mtitle{font-weight:700;font-size:15px}
-.msub{font-size:12px;color:var(--mut2);margin-top:3px}
-.mbody{padding:0 20px 24px}
-.qbtns{display:flex;gap:8px;flex-wrap:wrap}
-.qbtn{background:var(--card);border:1px solid var(--bdr2);border-radius:11px;padding:10px 20px;color:var(--txt);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
-.qbtn:hover{border-color:var(--acc);color:var(--acc)}
-.mcancel{width:100%;margin-top:12px;padding:13px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;color:var(--mut2);font-size:13px;cursor:pointer}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fi .2s}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.mb{background:var(--surf);border-radius:22px 22px 0 0;width:100%;max-width:480px;border:1px solid var(--bdr2);animation:su .25s cubic-bezier(.32,.72,0,1)}
+@keyframes su{from{transform:translateY(100%)}to{transform:none}}
+.mh{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:12px auto 0}
+.mhd{padding:16px 20px 12px}
+.mtitle{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px}
+.msub{font-size:12px;color:var(--txt2);margin-top:3px}
+.mbdy{padding:0 20px 24px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qbtn{height:48px;background:var(--card);border:1px solid var(--bdr2);border-radius:12px;color:var(--txt);font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer}
+.qbtn:active{background:var(--acc);border-color:var(--acc);color:#fff}
+.mcancel{width:100%;height:44px;background:var(--card);border:1px solid var(--bdr);border-radius:11px;color:var(--txt2);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;margin-top:10px}
 
 /* SHEET */
-.sheet-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end}
-.sheet-box{width:100%;background:var(--surf);border-radius:24px 24px 0 0;padding:20px;border-top:1px solid var(--bdr2)}
-.sheet-handle{width:40px;height:4px;background:var(--bdr2);border-radius:2px;margin:0 auto 20px}
+.sov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:flex-end}
+.sov.show{display:flex}
+.sbox{width:100%;background:var(--surf);border-radius:22px 22px 0 0;border-top:1px solid var(--bdr2);padding:0 0 10px}
+.shandle{width:36px;height:4px;background:var(--bdr2);border-radius:2px;margin:12px auto 0}
+.sprof{display:flex;align-items:center;gap:13px;padding:16px 20px}
+.sava{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sava svg{width:21px;height:21px;color:#fff}
+.snm{font-weight:700;font-size:15px}
+.smob{font-size:12.5px;color:var(--txt2);margin-top:2px}
+.sdiv{height:1px;background:var(--bdr);margin:0 20px}
+.sacts{padding:8px 12px}
+.sact{width:100%;height:50px;border:none;border-radius:12px;background:transparent;color:var(--txt);font-size:14px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;gap:12px;padding:0 10px}
+.sact svg{width:18px;height:18px;color:var(--txt2)}
+.sact.danger{color:var(--err)}
+.sact.danger svg{color:var(--err)}
 
-/* DEBUG CONSOLE */
-.debug-fab{position:fixed;bottom:90px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);font-size:18px;cursor:pointer;z-index:1001;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.4)}
-.debug-panel{position:fixed;bottom:80px;left:10px;right:10px;background:var(--bg);border:1px solid var(--bdr2);border-radius:16px;z-index:1000;display:none;flex-direction:column;max-height:320px}
-.debug-panel.show{display:flex}
-.debug-head{padding:10px 14px;background:var(--surf);border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)}
-.debug-head-left{font-weight:700;font-size:12px;color:var(--acc2)}
-.debug-head-btns{display:flex;gap:6px}
-.debug-head-btns button{background:var(--card);border:1px solid var(--bdr2);color:var(--txt);padding:5px 10px;border-radius:7px;font-size:10px;cursor:pointer}
-.debug-body{overflow-y:auto;padding:10px 14px;font-size:11px;font-family:monospace;flex:1}
-.debug-body::-webkit-scrollbar{width:3px}
-.debug-body::-webkit-scrollbar-thumb{background:var(--bdr2)}
-.log-line{margin-bottom:5px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.5;word-break:break-all}
-.log-line.success{color:#4ade80}
-.log-line.error{color:#f87171}
-.log-line.warn{color:#fbbf24}
-.log-line.info{color:#a0a0c0}
-.log-time{color:#444;font-size:10px;margin-right:6px}
+/* PROFILE TAB */
+.phero{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rl);padding:18px;display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.phava{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.phava svg{width:24px;height:24px;color:#fff}
+.phnm{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px}
+.phmob{font-size:12.5px;color:var(--txt2);margin-top:3px}
+.devcard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rl);padding:18px;margin-bottom:12px}
+.devnm{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.devrole{font-size:12px;color:var(--txt3);margin-top:4px;margin-bottom:14px}
+.devlinks{display:flex;gap:8px}
+.devlink{flex:1;height:40px;border-radius:10px;border:1px solid var(--bdr2);background:var(--card2);color:var(--txt);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:600}
+.devlink svg{width:14px;height:14px}
+.logout{width:100%;height:50px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.14);border-radius:var(--rs);color:var(--err);font-weight:600;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.logout svg{width:18px;height:18px}
+
+/* DEBUG */
+.dfab{position:fixed;bottom:72px;right:14px;width:38px;height:38px;border-radius:50%;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt2);cursor:pointer;z-index:1001;display:flex;align-items:center;justify-content:center}
+.dfab svg{width:16px;height:16px}
+.dpanel{position:fixed;bottom:72px;left:10px;right:10px;background:var(--bg);border:1px solid var(--bdr2);border-radius:16px;z-index:1000;display:none;flex-direction:column;max-height:290px}
+.dpanel.show{display:flex}
+.dhead{padding:9px 14px;background:var(--surf);border-radius:16px 16px 0 0;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.dhead-l{font-size:12px;font-weight:700;color:var(--acc)}
+.dbtns{display:flex;gap:5px}
+.dbtns button{background:var(--card);border:1px solid var(--bdr2);color:var(--txt);padding:4px 10px;border-radius:6px;font-size:10px;font-family:'Inter',sans-serif;cursor:pointer}
+.dbody{overflow-y:auto;padding:10px 14px;font-size:11px;font-family:monospace;flex:1}
+.ll{margin-bottom:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.5;word-break:break-all}
+.ll.success{color:#22c55e}.ll.error{color:#ef4444}.ll.warn{color:#f59e0b}.ll.info{color:#94a3b8}
+.lt{color:#404040;margin-right:5px}
 
 /* UTILS */
-.sw{display:flex;gap:8px;margin-bottom:14px}
-.si{flex:1;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:11px 14px;color:var(--txt);font-size:14px;outline:none}
-.si:focus{border-color:var(--acc)}
-.sb{background:var(--acc);border:none;border-radius:12px;padding:11px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
-.sh{font-weight:700;font-size:10px;color:var(--mut2);text-transform:uppercase;margin:14px 0 10px;letter-spacing:.5px}
-.empty{text-align:center;padding:48px 20px;color:var(--mut2)}
-.empty h3{font-size:16px;margin-bottom:6px;color:var(--txt)}
-.empty p{font-size:13px}
-.skel{background:linear-gradient(90deg,var(--card) 25%,var(--bdr) 50%,var(--card) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:14px;margin-bottom:10px}
-.sk-card{height:170px}
-.sk-row{height:68px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--bdr2);border-radius:12px;padding:11px 18px;font-size:13px;z-index:500;opacity:0;transition:opacity .25s;white-space:nowrap;pointer-events:none}
-.toast.show{opacity:1}
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;display:inline-block;vertical-align:middle}
-.lmbtn{width:100%;padding:13px;background:var(--card);border:1px solid var(--bdr2);border-radius:13px;color:var(--acc2);font-weight:700;font-size:13px;cursor:pointer;text-align:center;margin-top:4px;transition:opacity .2s}
-.lmbtn:disabled{opacity:.5;cursor:not-allowed}
-
-/* DEV CARD */
-.dev-card{background:linear-gradient(135deg,rgba(124,109,240,.08),rgba(167,139,250,.04));border:1px solid rgba(124,109,240,.18);border-radius:16px;padding:18px;margin-bottom:12px}
-.dev-name{font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--acc2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.dev-links{display:flex;gap:8px;margin-top:12px}
-.dev-link{flex:1;padding:10px;border-radius:11px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);text-decoration:none;text-align:center;font-size:13px;font-weight:600}
-
-/* PROFILE ACTIONS */
-.logout-btn{width:100%;padding:13px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-radius:13px;color:var(--err);font-weight:600;cursor:pointer;font-size:14px}
+.empty{text-align:center;padding:52px 20px}
+.empty svg{width:44px;height:44px;color:var(--txt3);margin:0 auto 12px;display:block}
+.empty h3{font-size:15px;font-weight:700;margin-bottom:5px}
+.empty p{font-size:13px;color:var(--txt2)}
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--bdr) 50%,var(--card) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:var(--r);margin-bottom:10px}
+.sk-c{height:164px}.sk-r{height:66px}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--card2);border:1px solid var(--bdr2);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;z-index:500;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;display:inline-block;vertical-align:middle}
 
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
 @keyframes rot{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 </style>
 </head>
 <body>
 
-<!-- DEBUG FAB -->
-<button class="debug-fab" id="debugFab" onclick="toggleDebug()">🐛</button>
-
-<!-- DEBUG PANEL -->
-<div class="debug-panel" id="debugPanel">
-  <div class="debug-head">
-    <span class="debug-head-left">🔧 Debug Console <span id="logCount">(0)</span></span>
-    <div class="debug-head-btns">
-      <button onclick="copyLogs()">📋</button>
-      <button onclick="clearLogs()">🗑️</button>
-      <button onclick="toggleDebug()">✕</button>
+<button class="dfab" onclick="toggleDbg()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+</button>
+<div class="dpanel" id="dpanel">
+  <div class="dhead">
+    <span class="dhead-l">Debug <span id="lc">(0)</span></span>
+    <div class="dbtns">
+      <button onclick="cpLogs()">Copy</button>
+      <button onclick="clrLogs()">Clear</button>
+      <button onclick="toggleDbg()">✕</button>
     </div>
   </div>
-  <div class="debug-body" id="debugBody"></div>
+  <div class="dbody" id="dbody"></div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ==================== LOGIN PAGE ==================== -->
+<!-- LOGIN -->
 <div class="page" id="pgLogin">
-  <div class="lb">
+  <div class="lw">
     <div class="brand">
-      <div class="blogo">PW</div>
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
       <h1>Physics <span>Wallah</span></h1>
       <p>Unofficial Web Player</p>
     </div>
-    <div class="login-hint">
+    <div class="notice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <p>Use the <strong>same mobile number</strong> registered on Physics Wallah app.</p>
+      <p>Use the <strong>same mobile number</strong> registered on the Physics Wallah app.</p>
     </div>
     <div class="lcard">
-      <div class="ig">
+      <div class="fld">
         <label>Mobile Number</label>
-        <input type="tel" id="mobileInput" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric">
+        <input type="tel" id="mobileInp" placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric">
       </div>
-      <div class="otp-row" style="margin-bottom:14px">
-        <div class="ig" style="margin:0">
+      <div class="otp-row">
+        <div class="fld">
           <label>OTP</label>
-          <input type="text" id="otpInput" placeholder="6-digit OTP" maxlength="6" inputmode="numeric">
+          <input type="text" id="otpInp" placeholder="6-digit OTP" maxlength="6" inputmode="numeric">
         </div>
-        <button class="otp-btn" id="sendOtpBtn" onclick="sendOTP()">Send OTP</button>
+        <button class="send-btn" id="sendBtn" onclick="sendOTP()">Send OTP</button>
       </div>
-      <button class="lbtn" id="loginBtn" onclick="verifyOTP()">
+      <button class="login-btn" id="loginBtn" onclick="verifyOTP()">
         <span id="loginBtnTxt">Verify &amp; Login</span>
       </button>
-      <div class="emsg" id="loginErr"></div>
+      <div class="err" id="loginErr"></div>
     </div>
   </div>
 </div>
 
-<!-- ==================== PROFILE SETUP ==================== -->
+<!-- SETUP -->
 <div class="page" id="pgSetup">
-  <div class="setup-box">
-    <div class="setup-avatar">🎓</div>
-    <h2>Welcome!</h2>
-    <p>Your account is verified and ready.</p>
-    <div class="setup-card">
-      <div class="setup-row">
-        <div class="setup-icon">📱</div>
+  <div class="sw">
+    <div class="sw-ava">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <h2>You're all set!</h2>
+    <p>Account verified successfully.</p>
+    <div class="sw-card">
+      <div class="sw-row">
+        <div class="sw-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
         <div>
-          <div class="setup-lbl">Mobile</div>
-          <div class="setup-val" id="setupMobile">—</div>
+          <div class="sw-lbl">Mobile</div>
+          <div class="sw-val" id="setupMob">—</div>
         </div>
       </div>
-      <div class="setup-row">
-        <div class="setup-icon">✅</div>
+      <div class="sw-row">
+        <div class="sw-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
         <div>
-          <div class="setup-lbl">Status</div>
-          <div class="setup-val" style="color:var(--ok)">Verified Account</div>
+          <div class="sw-lbl">Status</div>
+          <div class="sw-val" style="color:var(--ok)">Verified</div>
         </div>
       </div>
     </div>
-    <button class="setup-cont" onclick="goHome()">Continue to Dashboard →</button>
+    <button class="cont-btn" onclick="goHome()">Continue to Dashboard</button>
   </div>
 </div>
 
-<!-- ==================== HOME PAGE ==================== -->
+<!-- HOME -->
 <div class="page base" id="pgHome">
   <div class="tb">
-    <div class="tb-title" id="homeTitle">Physics Wallah</div>
-    <div class="ava" id="avabtn" onclick="openSheet()">P</div>
-  </div>
-
-  <!-- Tab: Batches -->
-  <div id="tabBatches" class="sc">
-    <div class="sw">
-      <input class="si" id="searchInp" placeholder="Search batches..." oninput="onSearch(this.value)">
-      <button class="sb" onclick="onSearch(document.getElementById('searchInp').value)">🔍</button>
+    <div class="tb-title">Physics Wallah</div>
+    <div class="ib" onclick="openSheet()" style="border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="width:17px;height:17px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </div>
-    <div class="sh">All Batches</div>
-    <div id="batchGrid"></div>
-    <button class="lmbtn" id="loadMoreBtn" onclick="loadMoreBatches()">Load More ↓</button>
   </div>
 
-  <!-- Tab: Enrolled -->
-  <div id="tabEnrolled" class="sc" style="display:none">
-    <div class="sh">My Batches</div>
-    <div id="enrolledGrid"><div class="empty"><h3>No Enrolled Batches</h3><p>Enroll on the PW app first.</p></div></div>
+  <div id="tab0" class="sc">
+    <div class="sc-p">
+      <div class="srch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search batches…" id="searchInp" oninput="onSearch(this.value)">
+      </div>
+      <div class="sh">All Batches</div>
+      <div id="batchGrid"></div>
+      <button class="lmbtn" id="lmBtn" onclick="loadMore()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        Load More
+      </button>
+    </div>
   </div>
 
-  <!-- Tab: Saved -->
-  <div id="tabSaved" class="sc" style="display:none">
-    <div class="sh">Saved Batches</div>
-    <div id="savedGrid"></div>
-  </div>
-
-  <!-- Tab: Profile -->
-  <div id="tabProfile" class="sc" style="display:none">
-    <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:16px;margin-bottom:14px">
-      <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff">P</div>
-      <div>
-        <div style="font-weight:700">PW Student</div>
-        <div id="profileMobile" style="font-size:12px;color:var(--mut2)">—</div>
+  <div id="tab1" class="sc" style="display:none">
+    <div class="sc-p">
+      <div class="sh">Enrolled Batches</div>
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <h3>No Enrolled Batches</h3>
+        <p>Enroll from the official PW app first.</p>
       </div>
     </div>
-    <div class="sh">Developer</div>
-    <div class="dev-card">
-      <div class="dev-name">@CODEXMOMO</div>
-      <div style="font-size:12px;color:var(--mut2);margin-top:4px">PW Web Player</div>
-      <div class="dev-links">
-        <a href="https://t.me/CODEXUPDATEZ" target="_blank" class="dev-link">📨 Telegram</a>
-        <a href="https://github.com/codexmomoo" target="_blank" class="dev-link">💻 GitHub</a>
-      </div>
+  </div>
+
+  <div id="tab2" class="sc" style="display:none">
+    <div class="sc-p">
+      <div class="sh">Saved Batches</div>
+      <div id="savedGrid"></div>
     </div>
-    <div class="sh">Account</div>
-    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <div id="tab3" class="sc" style="display:none">
+    <div class="sc-p">
+      <div class="phero">
+        <div class="phava">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <div class="phnm">PW Student</div>
+          <div class="phmob" id="profMob">—</div>
+        </div>
+      </div>
+      <div class="sh">Developer</div>
+      <div class="devcard">
+        <div class="devnm">@CODEXMOMO</div>
+        <div class="devrole">PW Web Player Developer</div>
+        <div class="devlinks">
+          <a href="https://t.me/CODEXUPDATEZ" target="_blank" class="devlink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Telegram
+          </a>
+          <a href="https://github.com/codexmomoo" target="_blank" class="devlink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+      <div class="sh">Account</div>
+      <button class="logout" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
   </div>
 
   <nav class="bnav">
-    <button class="bnt on" id="bn0" onclick="switchTab(0)"><div class="bnt-icon">📚</div>Batches</button>
-    <button class="bnt" id="bn1" onclick="switchTab(1)"><div class="bnt-icon">📖</div>Enrolled</button>
-    <button class="bnt" id="bn2" onclick="switchTab(2)"><div class="bnt-icon">❤️</div>Saved</button>
-    <button class="bnt" id="bn3" onclick="switchTab(3)"><div class="bnt-icon">👤</div>Profile</button>
+    <button class="bnt on" id="bn0" onclick="swTab(0)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      Batches
+    </button>
+    <button class="bnt" id="bn1" onclick="swTab(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Enrolled
+    </button>
+    <button class="bnt" id="bn2" onclick="swTab(2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Saved
+    </button>
+    <button class="bnt" id="bn3" onclick="swTab(3)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
   </nav>
 </div>
 
-<!-- ==================== SUBJECTS PAGE ==================== -->
+<!-- SUBJECTS -->
 <div class="page" id="pgSubj">
   <div class="tb">
-    <div class="tb-l">
-      <div class="bk" onclick="showPage('pgHome')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title" id="subjTitle">Subjects</div>
-    </div>
+    <div class="ib" onclick="showPage('pgHome')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="tb-title" id="subjTitle">Subjects</div>
   </div>
-  <div class="sc">
-    <div class="lpill" onclick="goLive()">
-      <div class="ldot"></div>
-      <span class="ltxt">Live Classes</span>
-      <span style="color:var(--mut2);margin-left:auto">→</span>
+  <div class="sc"><div class="sc-p">
+    <div class="lvpill" onclick="goLive()">
+      <div class="lvdot"></div>
+      <span class="lvtxt">Live Classes</span>
+      <span class="lvarr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
     </div>
-    <div class="sh">All Subjects</div>
+    <div class="sh">Subjects</div>
     <div id="subjGrid"></div>
-  </div>
+  </div></div>
 </div>
 
-<!-- ==================== TOPICS PAGE ==================== -->
+<!-- TOPICS -->
 <div class="page" id="pgTopic">
   <div class="tb">
-    <div class="tb-l">
-      <div class="bk" onclick="showPage('pgSubj')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title" id="topicTitle">Topics</div>
-    </div>
+    <div class="ib" onclick="showPage('pgSubj')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="tb-title" id="topicTitle">Topics</div>
   </div>
-  <div class="sc">
-    <div class="sh">All Topics</div>
+  <div class="sc"><div class="sc-p">
+    <div class="sh">Topics</div>
     <div id="topicGrid"></div>
-  </div>
+  </div></div>
 </div>
 
-<!-- ==================== CONTENT PAGE ==================== -->
+<!-- CONTENT -->
 <div class="page" id="pgContent">
   <div class="tb">
-    <div class="tb-l">
-      <div class="bk" onclick="showPage('pgTopic')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title" id="contentTitle">Content</div>
-    </div>
+    <div class="ib" onclick="showPage('pgTopic')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="tb-title" id="contentTitle">Content</div>
   </div>
   <div class="ctabs">
-    <button class="pdftab on" id="ctab0" onclick="switchContentTab(0)">▶ Videos</button>
-    <button class="pdftab" id="ctab1" onclick="switchContentTab(1)">📄 Notes</button>
-    <button class="pdftab" id="ctab2" onclick="switchContentTab(2)">📋 DPP</button>
+    <button class="ctab on" id="ct0" onclick="swContent(0)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Videos
+    </button>
+    <button class="ctab" id="ct1" onclick="swContent(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Notes
+    </button>
+    <button class="ctab" id="ct2" onclick="swContent(2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>DPP
+    </button>
   </div>
-  <div class="sc" style="padding-top:10px;padding-bottom:20px">
-    <div id="contentGrid"></div>
-  </div>
+  <div class="sc"><div class="sc-p" id="contentGrid"></div></div>
 </div>
 
-<!-- ==================== PLAYER PAGE ==================== -->
+<!-- PLAYER -->
 <div class="page" id="pgPlayer">
-  <div class="player-tb">
-    <div class="bk" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);color:#fff" onclick="closePlayer()">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <div class="tb-title" style="color:#fff" id="playerTopTitle">Video</div>
+  <div class="ptb">
+    <div class="ib" onclick="closePlayer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="tb-title" id="pbarTitle">Video</div>
   </div>
   <video id="vplayer" controls playsinline></video>
-  <div class="player-body">
-    <div class="player-info">
-      <div class="player-title" id="playerTitle">Loading...</div>
-      <div class="player-acts">
-        <button class="pact pri" onclick="openQualityPicker()">⚙️ Quality</button>
-        <button class="pact" id="btnNotes" onclick="openPdf('notes')" disabled>📄 Notes</button>
-        <button class="pact" id="btnDpp" onclick="openPdf('dpp')" disabled>📋 DPP</button>
+  <div class="pscroll">
+    <div class="pinfo">
+      <div class="ptitle" id="ptitle">Loading…</div>
+      <div class="pacts" id="pacts">
+        <button class="pab pri" onclick="openQPicker()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M2 12h2M20 12h2"/></svg>
+          Quality
+        </button>
+        <button class="pab" id="btnNotes" onclick="openPdf('notes')" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Notes
+        </button>
+        <button class="pab" id="btnDpp" onclick="openPdf('dpp')" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>DPP
+        </button>
       </div>
     </div>
     <div class="pdf-panel" id="pdfPanel">
-      <div class="pdf-topbar">
-        <button class="pdftab on" id="pdfTabNotes" onclick="switchPdfTab('notes')">Notes</button>
-        <button class="pdftab" id="pdfTabDpp" onclick="switchPdfTab('dpp')">DPP</button>
-        <button class="pdf-close" onclick="closePdfPanel()">✕</button>
+      <div class="pdf-tb">
+        <button class="pdf-tab on" id="ptN" onclick="swPdf('notes')">Notes</button>
+        <button class="pdf-tab" id="ptD" onclick="swPdf('dpp')">DPP</button>
+        <button class="pdf-close" onclick="closePdf()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <iframe id="pdfFrame" class="pdf-frame" allowfullscreen></iframe>
     </div>
   </div>
 </div>
 
-<!-- ==================== LIVE PAGE ==================== -->
+<!-- LIVE -->
 <div class="page" id="pgLive">
   <div class="tb">
-    <div class="tb-l">
-      <div class="bk" onclick="showPage('pgSubj')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title">Live Classes</div>
-    </div>
+    <div class="ib" onclick="showPage('pgSubj')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="tb-title">Live Classes</div>
   </div>
-  <div class="sc"><div id="liveGrid"></div></div>
+  <div class="sc"><div class="sc-p" id="liveGrid"></div></div>
 </div>
 
-<!-- ==================== PROFILE SHEET ==================== -->
-<div class="sheet-ov" id="sheetOv" onclick="closeSheet(event)">
-  <div class="sheet-box">
-    <div class="sheet-handle"></div>
-    <div style="display:flex;align-items:center;gap:13px;margin-bottom:18px">
-      <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff">PW</div>
+<!-- SHEET -->
+<div class="sov" id="sov" onclick="onSOvClick(event)">
+  <div class="sbox">
+    <div class="shandle"></div>
+    <div class="sprof">
+      <div class="sava"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
       <div>
-        <div style="font-weight:700">PW Student</div>
-        <div id="sheetMobile" style="font-size:12px;color:var(--mut2)">—</div>
+        <div class="snm">PW Student</div>
+        <div class="smob" id="sheetMob">—</div>
       </div>
     </div>
-    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    <div class="sdiv"></div>
+    <div class="sacts">
+      <button class="sact danger" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- ==================== SCRIPTS ==================== -->
 <script>
 'use strict';
-
-// ============================================================
-// CONFIG
-// ============================================================
-const CFG = {
-  maintenance: false,
-  notice: true,
-  noticeMsg: 'Use the same mobile number registered on Physics Wallah app.',
-  clientId: '5eb393ee95fab7468a79d189',
-};
-
-// ============================================================
-// STATE
-// ============================================================
+const CFG = { clientId:'5eb393ee95fab7468a79d189', maintenance:false };
 const S = {
-  token: localStorage.getItem('pw_token') || null,
-  mobile: localStorage.getItem('pw_mobile') || '',
-  batch: null,    // { id, name }
-  subject: null,  // { slug, name }
-  topic: null,    // { id, name }
-  contentTab: 0,
-  video: null,    // { url, title }
-  pdfNotes: null,
-  pdfDpp: null,
-  batches: [],
-  batchPage: 0,
-  hasMore: true,
-  searchQuery: '',
-  homeTab: 0,
+  token: localStorage.getItem('pw_token')||null,
+  mobile: localStorage.getItem('pw_mobile')||'',
+  batch:null, subject:null, topic:null,
+  contentTab:0, video:null, pdfNotes:null, pdfDpp:null,
+  batches:[], batchPage:0, hasMore:true, searchQ:'', homeTab:0,
 };
+let hls=null, toastT=null, otpT=null;
+const LOGS=[];
 
-let hlsInstance = null;
-let toastTimer = null;
-let logLines = [];
-
-// ============================================================
-// DEBUG LOGGER
-// ============================================================
-function log(msg, type = 'info') {
-  const t = new Date().toLocaleTimeString('en', { hour12: false });
-  logLines.push({ t, msg, type });
-
-  const body = document.getElementById('debugBody');
-  if (body) {
-    const el = document.createElement('div');
-    el.className = `log-line ${type}`;
-    el.innerHTML = `<span class="log-time">${t}</span>${escHtml(String(msg))}`;
-    body.appendChild(el);
-    body.scrollTop = body.scrollHeight;
-  }
-  const cnt = document.getElementById('logCount');
-  if (cnt) cnt.textContent = `(${logLines.length})`;
-
-  console[type === 'error' ? 'error' : 'log'](`[PW][${type}]`, msg);
+// ── DEBUG ──
+function log(m,t='info'){
+  const ts=new Date().toLocaleTimeString('en',{hour12:false});
+  LOGS.push({ts,m,t});
+  const b=document.getElementById('dbody');
+  if(b){const el=document.createElement('div');el.className=`ll ${t}`;el.innerHTML=`<span class="lt">${ts}</span>${esc(String(m))}`;b.appendChild(el);b.scrollTop=b.scrollHeight;}
+  const c=document.getElementById('lc');if(c)c.textContent=`(${LOGS.length})`;
+  console[t==='error'?'error':'log']('[PW]',m);
 }
+function toggleDbg(){document.getElementById('dpanel').classList.toggle('show');}
+function clrLogs(){LOGS.length=0;document.getElementById('dbody').innerHTML='';document.getElementById('lc').textContent='(0)';}
+function cpLogs(){navigator.clipboard?.writeText(LOGS.map(l=>`[${l.ts}][${l.t}] ${l.m}`).join('\n')).then(()=>toast('Copied'));}
 
-function toggleDebug() {
-  const p = document.getElementById('debugPanel');
-  p.classList.toggle('show');
+// ── HELPERS ──
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2800);}
+function skelEl(id,type,n){const g=document.getElementById(id);if(g)g.innerHTML=Array(n).fill(`<div class="skel ${type==='card'?'sk-c':'sk-r'}"></div>`).join('');}
+function emptyEl(id,h,p){const g=document.getElementById(id);if(g)g.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><h3>${esc(h)}</h3>${p?`<p>${esc(p)}</p>`:''}</div>`;}
+
+// ── API ──
+async function api(url,opts={}){
+  const PROXY=['studyuk.site','api.penpencil.co','videos.penpencil.co','cloudfront.net','akamaized.net','pw.live'];
+  const final=PROXY.some(d=>url.includes(d))?`/api/proxy?url=${encodeURIComponent(url)}`:url;
+  const hds={'Accept':'application/json','client-id':CFG.clientId,'user-agent':'Android',...(opts.headers||{})};
+  if(S.token)hds['Authorization']=`Bearer ${S.token}`;
+  if(opts.body)hds['Content-Type']='application/json';
+  log(`→ ${opts.method||'GET'} ${url.slice(0,85)}${url.length>85?'…':''}`);
+  try{
+    const res=await fetch(final,{method:opts.method||'GET',headers:hds,body:opts.body?JSON.stringify(opts.body):undefined});
+    if(res.status===401&&!url.includes('login')){log('401 — expired','warn');autoLogout();return{success:false,message:'Session expired'};}
+    const txt=await res.text();
+    log(`← ${res.status} ${txt.slice(0,100)}`,res.ok?'success':'warn');
+    try{return JSON.parse(txt);}catch{return{success:false,message:txt.slice(0,150)};}
+  }catch(e){log(`Fetch: ${e.message}`,'error');return{success:false,message:e.message};}
 }
+function autoLogout(){localStorage.removeItem('pw_token');localStorage.removeItem('pw_mobile');S.token=null;S.mobile='';toast('Session expired — please login again');setTimeout(()=>showPage('pgLogin'),1400);}
 
-function clearLogs() {
-  logLines = [];
-  document.getElementById('debugBody').innerHTML = '';
-  document.getElementById('logCount').textContent = '(0)';
+// ── NAV ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');if(!p.classList.contains('base'))p.style.display='none';});
+  const t=document.getElementById(id);if(t){t.style.display='flex';t.classList.add('active');}
 }
-
-function copyLogs() {
-  const txt = logLines.map(l => `[${l.t}] [${l.type}] ${l.msg}`).join('\n');
-  navigator.clipboard?.writeText(txt).then(() => toast('Logs copied!'));
+function swTab(n){
+  S.homeTab=n;
+  [0,1,2,3].forEach(i=>{const t=document.getElementById(`tab${i}`);if(t)t.style.display=i===n?'block':'none';document.getElementById(`bn${i}`)?.classList.toggle('on',i===n);});
+  if(n===2)renderSaved();
 }
+function openSheet(){document.getElementById('sov').classList.add('show');}
+function closeSheet(){document.getElementById('sov').classList.remove('show');}
+function onSOvClick(e){if(e.target===document.getElementById('sov'))closeSheet();}
 
-// ============================================================
-// HELPERS
-// ============================================================
-function escHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// ── AUTH ──
+async function sendOTP(){
+  const mob=document.getElementById('mobileInp').value.trim();
+  hideErr();
+  if(!/^\d{10}$/.test(mob)){showErr('Enter a valid 10-digit mobile number');return;}
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true;btn.textContent='Sending…';
+  const res=await api('https://studyuk.site/pw/login/get-otp',{method:'POST',body:{phone_number:mob}});
+  if(res?.success){
+    toast('OTP sent!');log('OTP sent','success');
+    let s=30;btn.textContent=`Resend (${s}s)`;clearInterval(otpT);
+    otpT=setInterval(()=>{s--;if(s<=0){clearInterval(otpT);btn.disabled=false;btn.textContent='Send OTP';}else btn.textContent=`Resend (${s}s)`;},1000);
+  }else{showErr(res?.message||'Failed to send OTP');log(`OTP err: ${res?.message}`,'error');btn.disabled=false;btn.textContent='Send OTP';}
 }
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-function showSkel(containerId, type = 'row', count = 3) {
-  const g = document.getElementById(containerId);
-  if (!g) return;
-  g.innerHTML = Array(count).fill(`<div class="skel ${type === 'card' ? 'sk-card' : 'sk-row'}"></div>`).join('');
-}
-
-// ============================================================
-// API — SINGLE FUNCTION, NO DUPLICATE
-// ============================================================
-async function api(url, opts = {}) {
-  // Route external URLs through Vercel proxy
-  let finalUrl = url;
-  const external = [
-    'studyuk.site',
-    'api.penpencil.co',
-    'videos.penpencil.co',
-    'd1d34p8vz63oiq.cloudfront.net',
-    'akamaized.net',
-    'cloudfront.net',
-    'pw.live',
-  ];
-  const needsProxy = external.some(d => url.includes(d));
-  if (needsProxy) {
-    finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
-  }
-
-  const headers = {
-    'Accept': 'application/json',
-    'client-id': CFG.clientId,
-    'user-agent': 'Android',
-    ...(opts.headers || {}),
-  };
-  if (S.token) {
-    headers['Authorization'] = `Bearer ${S.token}`;
-  }
-
-  const fetchOpts = {
-    method: opts.method || 'GET',
-    headers,
-  };
-  if (opts.body) {
-    headers['Content-Type'] = 'application/json';
-    fetchOpts.body = JSON.stringify(opts.body);
-  }
-
-  log(`→ ${fetchOpts.method} ${url.length > 100 ? url.slice(0, 100) + '…' : url}`);
-
-  try {
-    const res = await fetch(finalUrl, fetchOpts);
-
-    // AUTO-LOGOUT on 401
-    if (res.status === 401) {
-      log(`⚠️ 401 on ${url}`, 'warn');
-      // Only auto-logout for non-login endpoints
-      if (!url.includes('login')) {
-        autoLogout();
-        return { success: false, message: 'Session expired' };
-      }
-    }
-
-    const text = await res.text();
-    log(`← ${res.status} | ${text.slice(0, 150)}`, res.ok ? 'success' : 'warn');
-
-    try {
-      return JSON.parse(text);
-    } catch {
-      return { success: false, message: text.slice(0, 200) };
-    }
-  } catch (e) {
-    log(`✗ Fetch error: ${e.message}`, 'error');
-    return { success: false, message: e.message };
+async function verifyOTP(){
+  const mob=document.getElementById('mobileInp').value.trim();
+  const otp=document.getElementById('otpInp').value.trim();
+  hideErr();
+  if(!/^\d{10}$/.test(mob)){showErr('Enter valid mobile number');return;}
+  if(!/^\d{6}$/.test(otp)){showErr('Enter the 6-digit OTP');return;}
+  const btn=document.getElementById('loginBtn'),btxt=document.getElementById('loginBtnTxt');
+  btn.disabled=true;btxt.innerHTML='<span class="spin"></span> Verifying…';
+  const res=await api('https://studyuk.site/pw/login/verify-otp',{method:'POST',body:{phone_number:mob,otp}});
+  // ✅ Confirmed from smali: res.data.access_token
+  if(res?.success&&res.data?.access_token){
+    S.token=res.data.access_token;S.mobile=mob;
+    localStorage.setItem('pw_token',S.token);localStorage.setItem('pw_mobile',mob);
+    log('Login OK','success');
+    document.getElementById('setupMob').textContent=mob;
+    showPage('pgSetup');
+  }else{
+    showErr(res?.message||'Invalid OTP — please try again');
+    log(`Login fail: ${res?.message}`,'error');
+    btn.disabled=false;btxt.textContent='Verify & Login';
   }
 }
+function showErr(m){const e=document.getElementById('loginErr');e.textContent=m;e.classList.add('show');}
+function hideErr(){document.getElementById('loginErr').classList.remove('show');}
+function goHome(){showPage('pgHome');swTab(0);updProfile();S.batches=[];S.batchPage=0;S.hasMore=true;fetchBatches();}
+function updProfile(){const m=S.mobile||'—';['profMob','sheetMob'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=m;});}
+function logout(){if(hls){hls.destroy();hls=null;}localStorage.clear();S.token=null;S.mobile='';closeSheet();showPage('pgLogin');toast('Logged out');}
 
-function autoLogout() {
-  localStorage.removeItem('pw_token');
-  localStorage.removeItem('pw_mobile');
-  S.token = null;
-  S.mobile = '';
-  toast('Session expired. Please login again.');
-  setTimeout(() => showPage('pgLogin'), 1500);
-}
-
-// ============================================================
-// AUTH
-// ============================================================
-let otpInterval = null;
-
-async function sendOTP() {
-  const mobile = document.getElementById('mobileInput').value.trim();
-  hideLoginErr();
-
-  if (!/^\d{10}$/.test(mobile)) {
-    showLoginErr('Enter a valid 10-digit mobile number.');
-    return;
-  }
-
-  const btn = document.getElementById('sendOtpBtn');
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  log(`Sending OTP to ${mobile}`);
-  const res = await api('https://studyuk.site/pw/login/get-otp', {
-    method: 'POST',
-    body: { phone_number: mobile },
-  });
-
-  if (res && res.success) {
-    toast('OTP sent! Check your SMS.');
-    log('OTP sent successfully', 'success');
-    startOtpCooldown(btn);
-  } else {
-    const msg = res?.message || 'Failed to send OTP. Try again.';
-    showLoginErr(msg);
-    log(`OTP send failed: ${msg}`, 'error');
-    btn.disabled = false;
-    btn.textContent = 'Send OTP';
-  }
-}
-
-function startOtpCooldown(btn) {
-  let secs = 30;
-  btn.textContent = `Resend (${secs}s)`;
-  clearInterval(otpInterval);
-  otpInterval = setInterval(() => {
-    secs--;
-    if (secs <= 0) {
-      clearInterval(otpInterval);
-      btn.disabled = false;
-      btn.textContent = 'Send OTP';
-    } else {
-      btn.textContent = `Resend (${secs}s)`;
-    }
-  }, 1000);
-}
-
-async function verifyOTP() {
-  const mobile = document.getElementById('mobileInput').value.trim();
-  const otp = document.getElementById('otpInput').value.trim();
-  hideLoginErr();
-
-  if (!/^\d{10}$/.test(mobile)) { showLoginErr('Enter a valid 10-digit mobile number.'); return; }
-  if (!/^\d{6}$/.test(otp)) { showLoginErr('Enter a valid 6-digit OTP.'); return; }
-
-  const btn = document.getElementById('loginBtn');
-  const btnTxt = document.getElementById('loginBtnTxt');
-  btn.disabled = true;
-  btnTxt.innerHTML = '<span class="spin"></span> Verifying…';
-
-  log(`Verifying OTP for ${mobile}`);
-  const res = await api('https://studyuk.site/pw/login/verify-otp', {
-    method: 'POST',
-    body: { phone_number: mobile, otp },
-  });
-
-  if (res && res.success && res.data?.access_token) {
-    // ✅ CORRECT token extraction: res.data.access_token
-    S.token = res.data.access_token;
-    S.mobile = mobile;
-    localStorage.setItem('pw_token', S.token);
-    localStorage.setItem('pw_mobile', mobile);
-    log('Login successful ✓', 'success');
-    showSetup();
-  } else {
-    const msg = res?.message || 'Invalid OTP. Please try again.';
-    showLoginErr(msg);
-    log(`Login failed: ${msg}`, 'error');
-    btn.disabled = false;
-    btnTxt.textContent = 'Verify & Login';
-  }
-}
-
-function showLoginErr(msg) {
-  const el = document.getElementById('loginErr');
-  el.textContent = msg;
-  el.classList.add('on');
-}
-function hideLoginErr() {
-  document.getElementById('loginErr').classList.remove('on');
-}
-
-function showSetup() {
-  document.getElementById('setupMobile').textContent = S.mobile;
-  showPage('pgSetup');
-}
-
-function goHome() {
-  showPage('pgHome');
-  switchTab(0);
-  updateProfileUI();
-  resetBatches();
-  fetchBatches();
-}
-
-function updateProfileUI() {
-  const m = S.mobile || '—';
-  ['profileMobile', 'sheetMobile'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = m;
-  });
-}
-
-function logout() {
-  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-  localStorage.clear();
-  S.token = null; S.mobile = '';
-  closeSheet();
-  showPage('pgLogin');
-  toast('Logged out successfully.');
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
-    if (!p.classList.contains('base')) p.style.display = 'none';
-  });
-  const target = document.getElementById(id);
-  if (target) {
-    target.style.display = 'flex';
-    target.classList.add('active');
-  }
-}
-
-function switchTab(n) {
-  S.homeTab = n;
-  const tabs = ['tabBatches', 'tabEnrolled', 'tabSaved', 'tabProfile'];
-  tabs.forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = i === n ? 'block' : 'none';
-  });
-  const btns = ['bn0', 'bn1', 'bn2', 'bn3'];
-  btns.forEach((id, i) => document.getElementById(id)?.classList.toggle('on', i === n));
-
-  if (n === 2) renderSaved();
-}
-
-function openSheet() {
-  document.getElementById('sheetOv').style.display = 'flex';
-}
-function closeSheet(e) {
-  if (!e || e.target === document.getElementById('sheetOv')) {
-    document.getElementById('sheetOv').style.display = 'none';
-  }
-}
-
-// ============================================================
-// BATCHES
-// ============================================================
-function resetBatches() {
-  S.batches = [];
-  S.batchPage = 0;
-  S.hasMore = true;
-  S.searchQuery = '';
-  document.getElementById('searchInp').value = '';
-}
-
-async function fetchBatches(append = false) {
-  if (!S.hasMore && append) { toast('All batches loaded!'); return; }
-
-  if (!append) showSkel('batchGrid', 'card', 2);
-
+// ── BATCHES ──
+async function fetchBatches(append=false){
+  if(!append)skelEl('batchGrid','card',2);
   S.batchPage++;
-  log(`Fetching batches page ${S.batchPage}`);
-  const res = await api(`https://studyuk.site/pw/api.php?page=${S.batchPage}`);
-
-  if (res && res.success && Array.isArray(res.batches)) {
-    if (append) {
-      S.batches = [...S.batches, ...res.batches];
-    } else {
-      S.batches = res.batches;
-    }
-    S.hasMore = res.batches.length >= 10;
-    log(`Loaded ${res.batches.length} batches (total: ${S.batches.length})`, 'success');
-  } else {
-    S.hasMore = false;
-    if (!append) {
-      document.getElementById('batchGrid').innerHTML = '<div class="empty"><h3>No Batches Found</h3><p>Check your connection and try again.</p></div>';
-    }
-    log(`Batches failed: ${res?.message}`, 'error');
+  log(`Batches page ${S.batchPage}`);
+  const res=await api(`https://studyuk.site/pw/api.php?page=${S.batchPage}`);
+  if(res?.success&&Array.isArray(res.batches)){
+    S.batches=append?[...S.batches,...res.batches]:res.batches;
+    S.hasMore=res.batches.length>=10;
+    log(`${res.batches.length} batches`,'success');
+  }else{
+    S.hasMore=false;
+    if(!append)emptyEl('batchGrid','No Batches Found','Check your connection');
+    log(`Batches err: ${res?.message}`,'error');
   }
-
   renderBatches();
-  const lmBtn = document.getElementById('loadMoreBtn');
-  if (lmBtn) {
-    lmBtn.disabled = !S.hasMore;
-    lmBtn.textContent = S.hasMore ? 'Load More ↓' : '✓ All Loaded';
-  }
+  const lb=document.getElementById('lmBtn');
+  if(lb){lb.disabled=!S.hasMore;lb.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>${S.hasMore?' Load More':' All Loaded'}`;}
 }
-
-function loadMoreBatches() {
-  fetchBatches(true);
-}
-
-function onSearch(q) {
-  S.searchQuery = q.toLowerCase().trim();
-  renderBatches();
-}
-
-function renderBatches() {
-  const grid = document.getElementById('batchGrid');
-  const favs = JSON.parse(localStorage.getItem('pw_favs') || '{}');
-  const list = S.searchQuery
-    ? S.batches.filter(b => b.name?.toLowerCase().includes(S.searchQuery))
-    : S.batches;
-
-  if (!list.length) {
-    grid.innerHTML = '<div class="empty"><h3>No Batches</h3><p>Try a different search.</p></div>';
-    return;
-  }
-
-  grid.innerHTML = list.map(b => {
-    const isFav = !!favs[b._id];
-    const img = b.previewImage
-      ? `<img class="cimg" src="${escHtml(b.previewImage)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
-        + `<div class="cph" style="display:none">📚</div>`
-      : `<div class="cph">📚</div>`;
-    return `<div class="cc" onclick="openSubjects('${escHtml(b._id)}','${escHtml(b.name || 'Batch')}')">
-      ${img}
-      <button class="fav-btn ${isFav ? 'active' : ''}" 
-        onclick="event.stopPropagation();toggleFav('${escHtml(b._id)}','${escHtml(b.name || 'Batch')}','${escHtml(b.previewImage || '')}',this)"
-        title="${isFav ? 'Remove from saved' : 'Save batch'}">
-        ${isFav ? '❤️' : '🤍'}
+function loadMore(){if(S.hasMore)fetchBatches(true);}
+function onSearch(q){S.searchQ=q.toLowerCase().trim();renderBatches();}
+function renderBatches(){
+  const grid=document.getElementById('batchGrid');
+  const favs=JSON.parse(localStorage.getItem('pw_favs')||'{}');
+  const list=S.searchQ?S.batches.filter(b=>b.name?.toLowerCase().includes(S.searchQ)):S.batches;
+  if(!list.length){emptyEl('batchGrid',S.searchQ?'No Results':'No Batches',S.searchQ?'Try different search':'');return;}
+  grid.innerHTML=list.map(b=>{
+    const f=!!favs[b._id];
+    const thumb=b.previewImage
+      ?`<img class="bc-img" src="${esc(b.previewImage)}" loading="lazy" onerror="this.outerHTML='<div class=bc-ph><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><path d=\\'M22 10v6M2 10l10-5 10 5-10 5z\\'/></svg></div>'">`
+      :`<div class="bc-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>`;
+    return `<div class="bc" onclick="openSubjects('${esc(b._id)}','${esc(b.name||'Batch')}')">
+      ${thumb}
+      <button class="fav ${f?'on':''}" onclick="event.stopPropagation();toggleFav('${esc(b._id)}','${esc(b.name||'')}','${esc(b.previewImage||'')}',this)">
+        <svg viewBox="0 0 24 24" fill="${f?'#ef4444':'none'}" stroke="${f?'#ef4444':'#fff'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       </button>
-      <div class="cbody">
-        <div class="cbody-icon">📘</div>
-        <div class="cbody-info">
-          <div class="cnm">${escHtml(b.name || 'Batch')}</div>
-          <div class="cmeta">${escHtml(b.byName || 'Physics Wallah')}</div>
-        </div>
-        <div class="carrow">›</div>
+      <div class="bc-body">
+        <div class="bc-info"><div class="bc-name">${esc(b.name||'Batch')}</div><div class="bc-faculty">${esc(b.byName||'Physics Wallah')}</div></div>
+        <div class="bc-arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
     </div>`;
   }).join('');
 }
-
-function toggleFav(id, name, img, btn) {
-  const favs = JSON.parse(localStorage.getItem('pw_favs') || '{}');
-  if (favs[id]) {
-    delete favs[id];
-    btn.classList.remove('active');
-    btn.textContent = '🤍';
-    toast('Removed from saved.');
-  } else {
-    favs[id] = { id, name, img };
-    btn.classList.add('active');
-    btn.textContent = '❤️';
-    toast('Saved!');
-  }
-  localStorage.setItem('pw_favs', JSON.stringify(favs));
-  if (S.homeTab === 2) renderSaved();
+function toggleFav(id,name,img,btn){
+  const favs=JSON.parse(localStorage.getItem('pw_favs')||'{}');
+  if(favs[id]){delete favs[id];btn.classList.remove('on');btn.querySelector('svg').setAttribute('fill','none');btn.querySelector('svg').setAttribute('stroke','#fff');toast('Removed from saved');}
+  else{favs[id]={id,name,img};btn.classList.add('on');btn.querySelector('svg').setAttribute('fill','#ef4444');btn.querySelector('svg').setAttribute('stroke','#ef4444');toast('Saved!');}
+  localStorage.setItem('pw_favs',JSON.stringify(favs));
+  if(S.homeTab===2)renderSaved();
+}
+function renderSaved(){
+  const favs=Object.values(JSON.parse(localStorage.getItem('pw_favs')||'{}'));
+  const grid=document.getElementById('savedGrid');
+  if(!favs.length){emptyEl('savedGrid','No Saved Batches','Tap the heart icon on any batch');return;}
+  grid.innerHTML=favs.map(b=>`<div class="bc" onclick="openSubjects('${esc(b.id)}','${esc(b.name)}')">
+    ${b.img?`<img class="bc-img" src="${esc(b.img)}">`:`<div class="bc-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg></div>`}
+    <div class="bc-body"><div class="bc-info"><div class="bc-name">${esc(b.name)}</div></div><div class="bc-arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+  </div>`).join('');
 }
 
-function renderSaved() {
-  const favs = Object.values(JSON.parse(localStorage.getItem('pw_favs') || '{}'));
-  const grid = document.getElementById('savedGrid');
-  if (!favs.length) {
-    grid.innerHTML = '<div class="empty"><h3>No Saved Batches</h3><p>Tap ❤️ on any batch to save it.</p></div>';
-    return;
-  }
-  grid.innerHTML = favs.map(b =>
-    `<div class="cc" onclick="openSubjects('${escHtml(b.id)}','${escHtml(b.name)}')">
-      ${b.img ? `<img class="cimg" src="${escHtml(b.img)}">` : '<div class="cph">📚</div>'}
-      <div class="cbody">
-        <div class="cbody-icon">📘</div>
-        <div class="cbody-info"><div class="cnm">${escHtml(b.name)}</div></div>
-        <div class="carrow">›</div>
-      </div>
-    </div>`
-  ).join('');
-}
-
-// ============================================================
-// SUBJECTS
-// ============================================================
-async function openSubjects(batchId, batchName) {
-  S.batch = { id: batchId, name: batchName };
-  document.getElementById('subjTitle').textContent = batchName;
-  showPage('pgSubj');
-  showSkel('subjGrid', 'row', 4);
-
-  // ✅ token param added to subjects URL
-  const url = `https://studyuk.site/pw/app.php?batch_id=${batchId}&token=${S.token}`;
-  log(`Fetching subjects: ${url}`);
-  const res = await api(url);
-
-  const grid = document.getElementById('subjGrid');
-  if (res && res.success && Array.isArray(res.data?.subjects) && res.data.subjects.length) {
-    const icons = ['📗', '📘', '📙', '📕', '📓', '📔'];
-    grid.innerHTML = res.data.subjects.map((s, i) =>
-      `<div class="rc" onclick="openTopics('${escHtml(s.slug)}','${escHtml(s.subject || s.name || 'Subject')}')">
-        <div class="rimgph">${icons[i % icons.length]}</div>
-        <div class="rtxt">
-          <div class="rnm">${escHtml(s.subject || s.name || 'Subject')}</div>
-          <div class="rsub">Tap to view topics</div>
-        </div>
-        <div class="rbadge">PRO</div>
+// ── SUBJECTS ──
+async function openSubjects(bid,bname){
+  S.batch={id:bid,name:bname};
+  document.getElementById('subjTitle').textContent=bname;
+  showPage('pgSubj');skelEl('subjGrid','row',4);
+  // ✅ token param required
+  const res=await api(`https://studyuk.site/pw/app.php?batch_id=${bid}&token=${S.token}`);
+  const subs=res?.data?.subjects;
+  const ICONS=[
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>`,
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  ];
+  if(res?.success&&Array.isArray(subs)&&subs.length){
+    document.getElementById('subjGrid').innerHTML=subs.map((s,i)=>
+      `<div class="rc" onclick="openTopics('${esc(s.slug)}','${esc(s.subject||s.name||'Subject')}')">
+        <div class="ri acc">${ICONS[i%ICONS.length]}</div>
+        <div class="rt"><div class="rnm">${esc(s.subject||s.name||'Subject')}</div><div class="rsb">Tap to view topics</div></div>
+        <div class="rbdg">PRO</div>
+        <div class="rarr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>`
     ).join('');
-    log(`Loaded ${res.data.subjects.length} subjects`, 'success');
-  } else {
-    grid.innerHTML = '<div class="empty"><h3>No Subjects Found</h3><p>This batch may not be available.</p></div>';
-    log(`Subjects failed: ${res?.message}`, 'error');
-  }
+    log(`${subs.length} subjects`,'success');
+  }else{emptyEl('subjGrid','No Subjects Found',res?.message||'');log(`Subjects err: ${res?.message}`,'error');}
 }
 
-// ============================================================
-// TOPICS — api.penpencil.co (routed through proxy)
-// ============================================================
-async function openTopics(slug, subjectName) {
-  S.subject = { slug, name: subjectName };
-  document.getElementById('topicTitle').textContent = subjectName;
-  showPage('pgTopic');
-  showSkel('topicGrid', 'row', 5);
-
-  // ✅ This goes through proxy which forwards Authorization + client-id headers
-  const url = `https://api.penpencil.co/v2/batches/${S.batch.id}/subject/${slug}/topics?page=1`;
-  log(`Fetching topics: ${url}`);
-  const res = await api(url);
-
-  const grid = document.getElementById('topicGrid');
-  if (res && res.success && Array.isArray(res.data) && res.data.length) {
-    grid.innerHTML = res.data.map((t, i) =>
-      `<div class="rc" onclick="openContent('${escHtml(t._id)}','${escHtml(t.name || 'Topic')}')">
-        <div class="rnum">${String(i + 1).padStart(2, '0')}</div>
-        <div class="rtxt">
-          <div class="rnm">${escHtml(t.name || 'Topic')}</div>
-          <div class="rsub">Tap to view content</div>
-        </div>
-        <div class="carrow">›</div>
+// ── TOPICS ──
+async function openTopics(slug,name){
+  S.subject={slug,name};
+  document.getElementById('topicTitle').textContent=name;
+  showPage('pgTopic');skelEl('topicGrid','row',5);
+  // ✅ Goes through proxy → forwards Authorization + client-id + user-agent
+  const res=await api(`https://api.penpencil.co/v2/batches/${S.batch.id}/subject/${slug}/topics?page=1`);
+  if(res?.success&&Array.isArray(res.data)&&res.data.length){
+    document.getElementById('topicGrid').innerHTML=res.data.map((t,i)=>
+      `<div class="rc" onclick="openContent('${esc(t._id)}','${esc(t.name||'Topic')}')">
+        <div class="rn">${String(i+1).padStart(2,'0')}</div>
+        <div class="rt"><div class="rnm">${esc(t.name||'Topic')}</div><div class="rsb">Tap to view content</div></div>
+        <div class="rarr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>`
     ).join('');
-    log(`Loaded ${res.data.length} topics`, 'success');
-  } else {
-    grid.innerHTML = `<div class="empty"><h3>No Topics Found</h3><p>${escHtml(res?.message || 'Try a different subject.')}</p></div>`;
-    log(`Topics failed: ${JSON.stringify(res)}`, 'error');
-  }
+    log(`${res.data.length} topics`,'success');
+  }else{emptyEl('topicGrid','No Topics Found',res?.message||'Try a different subject');log(`Topics err: ${JSON.stringify(res)}`,'error');}
 }
 
-// ============================================================
-// CONTENT
-// ============================================================
-async function openContent(topicId, topicName) {
-  S.topic = { id: topicId, name: topicName };
-  S.pdfNotes = null;
-  S.pdfDpp = null;
-  document.getElementById('contentTitle').textContent = topicName;
-  S.contentTab = 0;
-  updateContentTabs();
-  showPage('pgContent');
-  fetchContent();
+// ── CONTENT ──
+async function openContent(tid,tname){
+  S.topic={id:tid,name:tname};S.pdfNotes=null;S.pdfDpp=null;
+  document.getElementById('contentTitle').textContent=tname;
+  S.contentTab=0;updCtabs();showPage('pgContent');fetchContent();
 }
+function swContent(n){S.contentTab=n;updCtabs();fetchContent();}
+function updCtabs(){[0,1,2].forEach(i=>document.getElementById(`ct${i}`)?.classList.toggle('on',i===S.contentTab));}
 
-function switchContentTab(n) {
-  S.contentTab = n;
-  updateContentTabs();
-  fetchContent();
-}
-
-function updateContentTabs() {
-  [0, 1, 2].forEach(i => {
-    document.getElementById(`ctab${i}`)?.classList.toggle('on', i === S.contentTab);
-  });
-}
-
-async function fetchContent() {
-  showSkel('contentGrid', 'row', 4);
-  const typeMap = { 0: 'LECTURES', 1: 'NOTES', 2: 'DPP' };
-  const url = `https://studyuk.site/pw/contents.php?batch_id=${S.batch.id}&subject_id=${S.subject.slug}&contentType=${typeMap[S.contentTab]}&page=1&tag_id=${S.topic.id}`;
-  log(`Fetching content: ${url}`);
-  const res = await api(url);
-
-  const grid = document.getElementById('contentGrid');
-  if (res && res.success && Array.isArray(res.data) && res.data.length) {
-    log(`Loaded ${res.data.length} items`, 'success');
-    if (S.contentTab === 0) {
-      // Videos
-      grid.innerHTML = res.data.map(v => {
-        const title = escHtml(v.title || v.topic || 'Video');
-        const sid = escHtml(v.scheduleId || v._id);
-        const vid = escHtml(v._id);
+async function fetchContent(){
+  const grid=document.getElementById('contentGrid');
+  grid.innerHTML='<div class="skel sk-r"></div><div class="skel sk-r"></div><div class="skel sk-r"></div>';
+  const types=['LECTURES','NOTES','DPP'];
+  // ✅ Exact URL from ContentFragment$2 smali
+  const url=`https://studyuk.site/pw/contents.php?batch_id=${S.batch.id}&subject_id=${S.subject.slug}&contentType=${types[S.contentTab]}&page=1&tag_id=${S.topic.id}`;
+  log(`Content (${types[S.contentTab]})`);
+  const res=await api(url);
+  // ✅ optJSONArray("data") — null safe
+  const items=res?.data;
+  if(res?.success&&Array.isArray(items)&&items.length){
+    log(`${items.length} items`,'success');
+    if(S.contentTab===0){
+      // ✅ Video structure from parseContentData: data.data.topic, data.data.videoDetails
+      grid.innerHTML=items.map(v=>{
+        const d=v.data||{};const vd=d.videoDetails||{};
+        const title=esc(d.topic||v.title||'Video');
+        const sid=esc(v.scheduleId||v._id);
+        const vid=esc(v._id);
+        const dur=vd.duration?fmtDur(vd.duration):'Tap to play';
         return `<div class="vc" onclick="loadVideo('${vid}','${title}','${sid}')">
-          <div class="vthph">▶️</div>
-          <div class="vtxt">
-            <div class="vnm">${title}</div>
-            <div class="vmeta">Tap to play</div>
+          <div class="vth">
+            ${vd.image?`<img src="${esc(vd.image)}" onerror="this.remove()">`:''}
+            <div class="vpi"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
           </div>
+          <div class="vt"><div class="vn">${title}</div><div class="vm">${dur}</div></div>
         </div>`;
       }).join('');
-    } else {
-      // Notes or DPP
-      const icon = S.contentTab === 1 ? '📄' : '📋';
-      grid.innerHTML = res.data.map(n => {
-        const title = escHtml(n.title || n.topic || 'File');
-        const sid = escHtml(n.scheduleId || n._id);
-        const pdfType = S.contentTab === 1 ? 'notes' : 'dpp';
-        return `<div class="rc" onclick="loadPdfDirect('${sid}','${pdfType}','${title}')">
-          <div class="rnum">${icon}</div>
-          <div class="rtxt">
-            <div class="rnm">${title}</div>
-            <div class="rsub">Tap to view</div>
-          </div>
-          <div class="carrow">›</div>
+    }else{
+      const isN=S.contentTab===1;
+      const ico=isN
+        ?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`
+        :`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`;
+      // ✅ Notes: d.data.topic | DPP: d.title
+      grid.innerHTML=items.map(n=>{
+        const d=isN?(n.data||{}):n;
+        const title=esc(d.topic||n.title||'File');
+        const sid=esc(n.scheduleId||n._id);
+        const type=isN?'notes':'dpp';
+        return `<div class="rc" onclick="loadPdf('${sid}','${type}','${title}')">
+          <div class="ri acc">${ico}</div>
+          <div class="rt"><div class="rnm">${title}</div><div class="rsb">Tap to open</div></div>
+          <div class="rarr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>`;
       }).join('');
     }
-  } else {
-    grid.innerHTML = '<div class="empty"><h3>No Content</h3><p>Nothing found for this topic.</p></div>';
-    log(`Content failed: ${res?.message}`, 'error');
-  }
+  }else{emptyEl('contentGrid','No Content','Nothing found for this topic');log(`Content err: ${res?.message}`,'error');}
 }
+function fmtDur(s){const n=parseInt(s);if(isNaN(n))return s;return`${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;}
 
-// ============================================================
-// NOTES / DPP DIRECT
-// ============================================================
-async function loadPdfDirect(scheduleId, type, title) {
+// ── PDF ──
+async function loadPdf(sid,type,title){
   toast('Loading…');
-  const url = `https://studyuk.site/pw/api.php?batch_id=${S.batch.id}&subject_id=${S.subject.slug}&schedule_id=${scheduleId}&token=${S.token}`;
-  log(`Fetching PDF details: ${url}`);
-  const res = await api(url);
-
-  if (res && res.success && res.data) {
-    const d = res.data;
-    if (type === 'notes' && d.classNotes?.length) {
-      openPdfViewer(d.classNotes[0].url, title, 'notes');
-    } else if (type === 'dpp' && d.dpps?.length) {
-      openPdfViewer(d.dpps[0].url, title, 'dpp');
-    } else {
-      toast('PDF not available for this item.');
-      log('PDF data missing in response', 'warn');
-    }
-  } else {
-    toast('Failed to load PDF.');
-    log(`PDF load failed: ${res?.message}`, 'error');
-  }
+  // ✅ Exact URL from smali: api.php?batch_id=&subject_id=&schedule_id=&token=
+  const url=`https://studyuk.site/pw/api.php?batch_id=${S.batch.id}&subject_id=${S.subject.slug}&schedule_id=${sid}&token=${S.token}`;
+  log(`PDF details`);
+  const res=await api(url);
+  if(res?.success&&res.data){
+    const d=res.data;
+    // ✅ classNotes[0].url & dpps[0].url from handleNotesOrDppResponse smali
+    let pdfUrl=null;
+    if(type==='notes'&&Array.isArray(d.classNotes)&&d.classNotes.length){pdfUrl=d.classNotes[0].url;S.pdfNotes=pdfUrl;}
+    else if(type==='dpp'&&Array.isArray(d.dpps)&&d.dpps.length){pdfUrl=d.dpps[0].url;S.pdfDpp=pdfUrl;}
+    if(pdfUrl){openPdfViewer(pdfUrl,title,type);}
+    else{toast(type==='notes'?'No notes available':'No DPP available');log('PDF URL missing','warn');}
+  }else{toast('Failed to load');log(`PDF err: ${res?.message}`,'error');}
 }
-
-function openPdfViewer(pdfUrl, title, type) {
-  if (!pdfUrl) { toast('PDF not available.'); return; }
-  const viewerUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`;
-  document.getElementById('pdfFrame').src = viewerUrl;
-
-  // Open player page with only PDF panel visible
+function openPdfViewer(url,title,type){
   showPage('pgPlayer');
-  document.getElementById('playerTitle').textContent = title;
-  document.getElementById('playerTopTitle').textContent = title;
+  document.getElementById('ptitle').textContent=title;
+  document.getElementById('pbarTitle').textContent=title;
+  document.getElementById('vplayer').style.display='none';
+  document.getElementById('pacts').style.display='none';
   document.getElementById('pdfPanel').classList.add('show');
-
-  if (type === 'notes') S.pdfNotes = pdfUrl;
-  else S.pdfDpp = pdfUrl;
-
-  document.getElementById('btnNotes').disabled = !S.pdfNotes;
-  document.getElementById('btnDpp').disabled = !S.pdfDpp;
-
-  const vplayer = document.getElementById('vplayer');
-  vplayer.style.display = 'none';
-  document.querySelector('.player-acts').style.display = 'none';
+  swPdf(type);
 }
 
-// ============================================================
-// VIDEO
-// ============================================================
-async function loadVideo(videoId, title, scheduleId) {
-  toast('Loading video…');
-  const url = `https://studyuk.site/pw/api/get-video-url?batch_id=${S.batch.id}&childId=${scheduleId || videoId}`;
-  log(`Fetching video URL: ${url}`);
-  const res = await api(url);
-
-  if (res && res.success && res.url) {
-    S.video = { url: res.url, title };
-    log(`Video URL: ${res.url}`, 'success');
-    openQualityPicker(title, res.url);
-  } else {
-    toast('Failed to load video.');
-    log(`Video URL failed: ${res?.message}`, 'error');
-  }
+// ── VIDEO ──
+async function loadVideo(vid,title,sid){
+  toast('Fetching video…');
+  // ✅ Exact from ContentFragment$4 smali
+  const url=`https://studyuk.site/pw/api/get-video-url?batch_id=${S.batch.id}&childId=${sid||vid}`;
+  log(`Video URL`);
+  const res=await api(url);
+  if(res?.success&&res.url){S.video={url:res.url,title};log('Video URL OK','success');openQModal(title,res.url);}
+  else{toast('Failed to load video');log(`Video err: ${res?.message}`,'error');}
 }
-
-function openQualityPicker(title, url) {
-  if (!S.video && !url) { toast('No video loaded.'); return; }
-  const t = title || S.video?.title || 'Video';
-  const u = url || S.video?.url;
-
-  const existing = document.getElementById('qModal');
-  if (existing) existing.remove();
-
-  const modal = document.createElement('div');
-  modal.id = 'qModal';
-  modal.className = 'modal-ov';
-  modal.innerHTML = `
-    <div class="modal-box">
-      <div class="mhandle"></div>
-      <div class="mhead">
-        <div class="mtitle">Select Quality</div>
-        <div class="msub">${escHtml(t)}</div>
-      </div>
-      <div class="mbody">
-        <div class="qbtns">
-          ${['240p', '360p', '480p', '720p'].map(q =>
-            `<button class="qbtn" onclick="playVideo('${escHtml(u)}','${q}','${escHtml(t)}');document.getElementById('qModal').remove()">${q}</button>`
-          ).join('')}
-        </div>
-        <button class="mcancel" onclick="document.getElementById('qModal').remove()">Cancel</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
+function openQPicker(){if(S.video)openQModal(S.video.title,S.video.url);}
+function openQModal(title,masterUrl){
+  document.getElementById('qModal')?.remove();
+  const m=document.createElement('div');m.id='qModal';m.className='mo';
+  m.innerHTML=`<div class="mb"><div class="mh"></div><div class="mhd"><div class="mtitle">Select Quality</div><div class="msub">${esc(title)}</div></div>
+    <div class="mbdy"><div class="qgrid">
+      ${['240p','360p','480p','720p'].map(q=>`<button class="qbtn" onclick="playVideo('${esc(masterUrl)}','${q}','${esc(title)}');document.getElementById('qModal').remove()">${q}</button>`).join('')}
+    </div><button class="mcancel" onclick="document.getElementById('qModal').remove()">Cancel</button></div></div>`;
+  document.body.appendChild(m);
 }
-
-function playVideo(masterUrl, quality, title) {
-  // ✅ Replace master.mpd with hls/{quality}/main.m3u8
-  const hlsUrl = masterUrl.replace('master.mpd', `hls/${quality}/main.m3u8`);
-  log(`Playing: ${hlsUrl} [${quality}]`);
-
+function playVideo(masterUrl,quality,title){
+  // ✅ Exact from generateM3u8Url smali
+  const hlsUrl=masterUrl.replace('/master.mpd',`/hls/${quality}/main.m3u8`);
+  log(`Play [${quality}]`);
   showPage('pgPlayer');
-  const vplayer = document.getElementById('vplayer');
-  vplayer.style.display = 'block';
-  document.querySelector('.player-acts').style.display = 'flex';
+  const vp=document.getElementById('vplayer');
+  vp.style.display='block';
+  document.getElementById('pacts').style.display='flex';
   document.getElementById('pdfPanel').classList.remove('show');
-  document.getElementById('playerTitle').textContent = title;
-  document.getElementById('playerTopTitle').textContent = title;
-  document.getElementById('btnNotes').disabled = !S.pdfNotes;
-  document.getElementById('btnDpp').disabled = !S.pdfDpp;
-
-  // Destroy existing HLS
-  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-  vplayer.pause();
-  vplayer.removeAttribute('src');
-  vplayer.load();
-
-  // Route HLS through proxy for CORS + key handling
-  const proxiedUrl = `/api/proxy?url=${encodeURIComponent(hlsUrl)}`;
-
-  if (Hls.isSupported()) {
-    hlsInstance = new Hls({
-      enableWorker: true,
-      // Proxy loader for encrypted HLS segments
-      xhrSetup: (xhr, url) => {
-        log(`HLS XHR: ${url.slice(0, 80)}`, 'info');
-      },
-    });
-    hlsInstance.loadSource(proxiedUrl);
-    hlsInstance.attachMedia(vplayer);
-    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-      log('HLS manifest parsed, playing…', 'success');
-      vplayer.play().catch(e => log(`Play error: ${e.message}`, 'warn'));
-    });
-    hlsInstance.on(Hls.Events.ERROR, (evt, data) => {
-      log(`HLS error: ${data.type} / ${data.details}`, 'error');
-      if (data.fatal) {
-        toast('Video error. Try another quality.');
-      }
-    });
-  } else if (vplayer.canPlayType('application/vnd.apple.mpegurl')) {
-    // Native HLS (Safari/iOS)
-    vplayer.src = proxiedUrl;
-    vplayer.play().catch(e => log(`Play error: ${e.message}`, 'warn'));
-  } else {
-    toast('HLS not supported on this device.');
-    log('HLS not supported', 'error');
-  }
+  document.getElementById('ptitle').textContent=title;
+  document.getElementById('pbarTitle').textContent=title;
+  document.getElementById('btnNotes').disabled=!S.pdfNotes;
+  document.getElementById('btnDpp').disabled=!S.pdfDpp;
+  if(hls){hls.destroy();hls=null;}
+  vp.pause();vp.removeAttribute('src');vp.load();
+  const proxied=`/api/proxy?url=${encodeURIComponent(hlsUrl)}`;
+  if(Hls.isSupported()){
+    hls=new Hls({enableWorker:true});
+    hls.loadSource(proxied);hls.attachMedia(vp);
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{log('HLS ready','success');vp.play().catch(e=>log(`Play: ${e.message}`,'warn'));});
+    hls.on(Hls.Events.ERROR,(_,d)=>{log(`HLS ${d.type}/${d.details}`,'error');if(d.fatal)toast('Video error — try another quality');});
+  }else if(vp.canPlayType('application/vnd.apple.mpegurl')){
+    vp.src=proxied;vp.play().catch(()=>{});
+  }else toast('HLS not supported');
 }
-
-function closePlayer() {
-  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-  const vplayer = document.getElementById('vplayer');
-  vplayer.pause();
-  vplayer.removeAttribute('src');
-  vplayer.load();
+function closePlayer(){
+  if(hls){hls.destroy();hls=null;}
+  const vp=document.getElementById('vplayer');vp.pause();vp.removeAttribute('src');vp.load();
   showPage('pgContent');
 }
 
-// ============================================================
-// PDF PANEL
-// ============================================================
-function openPdf(type) {
-  const url = type === 'notes' ? S.pdfNotes : S.pdfDpp;
-  if (!url) { toast('Not available for this video.'); return; }
-  document.getElementById('pdfPanel').classList.add('show');
-  switchPdfTab(type);
+// ── PDF PANEL ──
+function openPdf(type){const url=type==='notes'?S.pdfNotes:S.pdfDpp;if(!url){toast('Not available');return;}document.getElementById('pdfPanel').classList.add('show');swPdf(type);}
+function swPdf(type){
+  document.getElementById('ptN').classList.toggle('on',type==='notes');
+  document.getElementById('ptD').classList.toggle('on',type==='dpp');
+  const url=type==='notes'?S.pdfNotes:S.pdfDpp;
+  if(url)document.getElementById('pdfFrame').src=`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}`;
 }
+function closePdf(){document.getElementById('pdfPanel').classList.remove('show');}
 
-function switchPdfTab(type) {
-  document.getElementById('pdfTabNotes').classList.toggle('on', type === 'notes');
-  document.getElementById('pdfTabDpp').classList.toggle('on', type === 'dpp');
-  const url = type === 'notes' ? S.pdfNotes : S.pdfDpp;
-  if (url) {
-    document.getElementById('pdfFrame').src = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}`;
-  }
-}
-
-function closePdfPanel() {
-  document.getElementById('pdfPanel').classList.remove('show');
-}
-
-// ============================================================
-// LIVE CLASSES
-// ============================================================
-async function goLive() {
-  if (!S.batch) { toast('Select a batch first.'); return; }
-  showPage('pgLive');
-  showSkel('liveGrid', 'row', 3);
-
-  // ✅ token param added to live URL
-  const url = `https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${S.batch.id}&token=${S.token}`;
-  log(`Fetching live schedule: ${url}`);
-  const res = await api(url);
-
-  const grid = document.getElementById('liveGrid');
-  if (res && res.success && Array.isArray(res.data) && res.data.length) {
-    grid.innerHTML = res.data.map(s => {
-      const tag = (s.tag || 'upcoming').toLowerCase();
-      const icon = tag === 'live' ? '🔴' : tag === 'ended' ? '⬛' : '🟡';
-      return `<div class="cc" onclick="playLiveClass('${escHtml(s._id)}','${escHtml(s.topic || 'Live Class')}')">
-        <div class="cph">${icon}</div>
-        <div class="cbody">
-          <div class="cbody-info">
-            <div class="cnm">${escHtml(s.topic || 'Live Class')}</div>
-            <div class="cmeta" style="display:flex;align-items:center;gap:6px">
-              <span class="live-tag ${tag}">${escHtml(s.tag || 'Upcoming')}</span>
-              ${s.startTime ? `• ${escHtml(s.startTime)}` : ''}
+// ── LIVE ──
+async function goLive(){
+  if(!S.batch){toast('Select a batch first');return;}
+  showPage('pgLive');skelEl('liveGrid','row',3);
+  // ✅ token param required
+  const res=await api(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${S.batch.id}&token=${S.token}`);
+  if(res?.success&&Array.isArray(res.data)&&res.data.length){
+    document.getElementById('liveGrid').innerHTML=res.data.map(s=>{
+      const tag=(s.tag||'upcoming').toLowerCase();
+      return `<div class="bc" onclick="playLive('${esc(s._id)}','${esc(s.topic||'Live')}')">
+        <div class="bc-ph" style="height:80px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:30px;height:30px"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        </div>
+        <div class="bc-body">
+          <div class="bc-info">
+            <div class="bc-name">${esc(s.topic||'Live Class')}</div>
+            <div class="bc-faculty" style="display:flex;align-items:center;gap:6px">
+              <span class="lv-tag ${tag}">${esc(s.tag||'Upcoming')}</span>
+              ${s.startTime?`• ${esc(s.startTime)}`:''}
             </div>
           </div>
-          <div class="carrow">▶</div>
+          <div class="bc-arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
       </div>`;
     }).join('');
-    log(`Loaded ${res.data.length} live classes`, 'success');
-  } else {
-    grid.innerHTML = '<div class="empty"><h3>No Live Classes Today</h3><p>Check back later.</p></div>';
-    log(`Live schedule: ${res?.message}`, 'warn');
-  }
+    log(`${res.data.length} live classes`,'success');
+  }else{emptyEl('liveGrid','No Live Classes Today','Check back later');log(`Live: ${res?.message}`,'warn');}
+}
+async function playLive(id,title){
+  toast('Loading…');
+  const res=await api(`https://studyuk.site/pw/api/get-video-url?batch_id=${S.batch.id}&childId=${id}`);
+  if(res?.success&&res.url){S.video={url:res.url,title};openQModal(title,res.url);}
+  else toast('Stream not available yet');
 }
 
-async function playLiveClass(id, title) {
-  toast('Loading live class…');
-  const url = `https://studyuk.site/pw/api/get-video-url?batch_id=${S.batch.id}&childId=${id}`;
-  const res = await api(url);
-  if (res && res.success && res.url) {
-    S.video = { url: res.url, title };
-    openQualityPicker(title, res.url);
-  } else {
-    toast('Live class not available yet.');
-    log(`Live stream failed: ${res?.message}`, 'error');
+// ── INIT ──
+window.addEventListener('load',()=>{
+  log('PW Player ready','success');
+  if(CFG.maintenance){
+    document.body.innerHTML=`<div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px;text-align:center;background:#0d0d0d;color:#f0f0f0;font-family:Inter,sans-serif">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="1.5" style="width:52px;height:52px"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      <h2 style="font-size:20px;font-weight:700">Under Maintenance</h2>
+      <p style="color:#a0a0a0;font-size:13px">We'll be back soon.</p>
+      <a href="https://t.me/CODEXUPDATEZ" style="padding:11px 26px;background:#ff6b35;color:#fff;border-radius:12px;text-decoration:none;font-weight:700;font-size:13px">@CODEXUPDATEZ</a>
+    </div>`;return;
   }
-}
-
-// ============================================================
-// INIT
-// ============================================================
-window.addEventListener('load', () => {
-  log('PW Player v2.0 initialized', 'success');
-
-  if (CFG.maintenance) {
-    document.body.innerHTML = `
-      <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center">
-        <div style="font-size:48px">🔧</div>
-        <h2>Under Maintenance</h2>
-        <p style="color:var(--mut2)">We'll be back shortly. Stay tuned on Telegram.</p>
-        <a href="https://t.me/CODEXUPDATEZ" style="padding:12px 24px;background:var(--acc);color:#fff;border-radius:12px;text-decoration:none;font-weight:700">@CODEXUPDATEZ</a>
-      </div>`;
-    return;
-  }
-
-  if (S.token) {
-    goHome();
-  } else {
-    showPage('pgLogin');
-  }
+  if(S.token)goHome();else showPage('pgLogin');
 });
 </script>
 </body>
