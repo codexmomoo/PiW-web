@@ -439,32 +439,47 @@ async function apiCall(url, options = {}) {
     const headers = { ...options.headers };
     if(W.token) headers['Authorization'] = `Bearer ${W.token}`;
     headers['client-id'] = '5eb393ee95fab7468a79d189';
+    headers['user-agent'] = 'Android';
+    headers['Accept'] = 'application/json';
     if(options.method === 'POST') headers['Content-Type'] = 'application/json';
     
     let finalUrl = url;
     if(url.includes('studyuk.site') || url.includes('api.penpencil.co')) {
       finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+      addLog(`🔄 Proxied: ${finalUrl.substring(0,60)}...`, 'info');
     }
     
-    const res = await fetch(finalUrl, { method: options.method || 'GET', headers, body: options.body ? JSON.stringify(options.body) : undefined });
+    const res = await fetch(finalUrl, { 
+      method: options.method || 'GET', 
+      headers, 
+      body: options.body ? JSON.stringify(options.body) : undefined 
+    });
     
     if(res.status === 401) {
       addLog('🔐 Token expired - logging out', 'warn');
       localStorage.clear();
+      W.token = null;
+      W.user = null;
       show('pgLogin');
       toast('Session expired. Please login again.', 'er');
-      return { success: false, message: 'Token expired' };
+      return { success: false, message: 'Token expired', expired: true };
     }
     
     const text = await res.text();
-    try { return JSON.parse(text); }
-    catch { return { success: false, message: text }; }
+    try { 
+      const json = JSON.parse(text);
+      addLog(`✅ Response: ${JSON.stringify(json).substring(0, 100)}...`, json.success ? 'success' : 'warn');
+      return json;
+    }
+    catch { 
+      addLog(`⚠️ Invalid JSON: ${text.substring(0, 100)}`, 'warn');
+      return { success: false, message: text }; 
+    }
   } catch(e) {
     addLog(`❌ API Error: ${e.message}`, 'error');
     return { success: false, message: e.message };
   }
 }
-
 // ===== AUTH =====
 let otpCooldown = 0;
 async function sendOTP() {
@@ -605,19 +620,36 @@ async function openTopics(subjectSlug, subjectName) {
   W.currentSubject = { slug: subjectSlug, name: subjectName };
   document.getElementById('ttitle').textContent = subjectName;
   show('pgTopic');
+  
   const g = document.getElementById('gt');
-  g.innerHTML = '<div class="skel sk-r"></div>';
+  g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
+  
   const url = `https://api.penpencil.co/v2/batches/${W.currentBatch.id}/subject/${subjectSlug}/topics?page=1`;
-  addLog(`Topics URL: ${url}`);
+  addLog(`🏷️ Topics URL: ${url}`, 'info');
+  
   const res = await apiCall(url);
+  addLog(`🏷️ Topics response: ${JSON.stringify(res).substring(0, 150)}`, 'info');
+  
+  if(res.expired) {
+    g.innerHTML = '<div class="empty"><h3>Session Expired</h3><p>Please login again</p></div>';
+    return;
+  }
+  
   if(res.success && Array.isArray(res.data)) {
-    if(!res.data.length) { g.innerHTML = '<div class="empty"><h3>No Topics</h3></div>'; return; }
-    g.innerHTML = res.data.map((t,i) => `<div class="rc" onclick="openContent('${t._id}','${esc(t.name)}')">
+    if(res.data.length === 0) {
+      g.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No Topics Found</h3></div>';
+      return;
+    }
+    addLog(`✅ Loaded ${res.data.length} topics`, 'success');
+    g.innerHTML = res.data.map((t, i) => `<div class="rc" onclick="openContent('${t._id}','${esc(t.name)}')">
       <div class="rnum">${String(i+1).padStart(2,'0')}</div>
       <div class="rtxt"><div class="rnm">${esc(t.name)}</div><div class="rsub">Tap to view content</div></div>
       <div class="carrow">›</div>
     </div>`).join('');
-  } else g.innerHTML = '<div class="empty"><h3>Failed to Load</h3></div>';
+  } else {
+    addLog('❌ Failed to load topics', 'error');
+    g.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to Load</h3><p>Try again later</p></div>';
+  }
 }
 
 // ===== CONTENT =====
@@ -712,19 +744,29 @@ function switchPdfTab(type) {
 function closePdfPanel() { document.getElementById('pdfPanel').classList.add('hidden'); }
 
 // ===== LIVE =====
+// ===== LIVE =====
 async function goLive() {
-  if(!W.currentBatch) { toast('Select a batch first'); return; }
+  if(!W.currentBatch) { toast('Select a batch first', 'er'); return; }
   show('pgLive');
   const g = document.getElementById('gl');
-  g.innerHTML = '<div class="skel sk-r"></div>';
+  g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
   
-  // ✅ Token add karo
   const res = await apiCall(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${W.currentBatch.id}&token=${W.token}`);
+  addLog(`📡 Live response: ${JSON.stringify(res).substring(0, 150)}`, 'info');
+  
+  if(res.expired) {
+    g.innerHTML = '<div class="empty"><h3>Session Expired</h3></div>';
+    return;
+  }
   
   if(res.success && res.data) {
+    if(res.data.length === 0) {
+      g.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><h3>No Live Classes</h3></div>';
+      return;
+    }
     g.innerHTML = res.data.map(s => `<div class="cc" onclick="playLive('${s._id}','${esc(s.topic)}')">
       <div class="cph">${s.tag==='Live'?'🔴':'⏰'}</div>
-      <div class="cbody"><div><div class="cnm">${esc(s.topic)}</div><div class="cmeta">${s.tag} • ${esc(s.startTime||'')}</div></div><div class="carrow">▶</div></div>
+      <div class="cbody"><div><div class="cnm">${esc(s.topic)}</div><div class="cmeta" style="color:${s.tag==='Live'?'#ff6b35':'var(--mut)'}">${s.tag} • ${esc(s.startTime||'')}</div></div><div class="carrow">▶</div></div>
     </div>`).join('');
   } else {
     g.innerHTML = '<div class="empty"><h3>No Live Classes</h3></div>';
