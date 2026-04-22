@@ -583,14 +583,21 @@ async function openSubjects(batchId, batchName) {
   show('pgSubj');
   const g = document.getElementById('gs');
   g.innerHTML = '<div class="skel sk-r"></div>';
-  const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}`);
+  
+  // ✅ Token query param add karo
+  const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}&token=${W.token}`);
+  
+  addLog(`Subjects response: ${JSON.stringify(res).substring(0, 150)}`);
+  
   if(res.success && res.data?.subjects) {
     g.innerHTML = res.data.subjects.map((s,i) => `<div class="rc" onclick="openTopics('${s.slug}','${esc(s.subject)}')">
       <div class="rimgph">${['📗','📘','📙','📕'][i%4]}</div>
       <div class="rtxt"><div class="rnm">${esc(s.subject)}</div><div class="rsub">Tap to view topics</div></div>
       <div class="rpro">PRO</div>
     </div>`).join('');
-  } else g.innerHTML = '<div class="empty"><h3>No Subjects</h3></div>';
+  } else {
+    g.innerHTML = '<div class="empty"><h3>No Subjects</h3><p>Try logging out and back in</p></div>';
+  }
 }
 
 // ===== TOPICS =====
@@ -710,20 +717,19 @@ async function goLive() {
   show('pgLive');
   const g = document.getElementById('gl');
   g.innerHTML = '<div class="skel sk-r"></div>';
-  const res = await apiCall(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${W.currentBatch.id}`);
+  
+  // ✅ Token add karo
+  const res = await apiCall(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${W.currentBatch.id}&token=${W.token}`);
+  
   if(res.success && res.data) {
     g.innerHTML = res.data.map(s => `<div class="cc" onclick="playLive('${s._id}','${esc(s.topic)}')">
       <div class="cph">${s.tag==='Live'?'🔴':'⏰'}</div>
       <div class="cbody"><div><div class="cnm">${esc(s.topic)}</div><div class="cmeta">${s.tag} • ${esc(s.startTime||'')}</div></div><div class="carrow">▶</div></div>
     </div>`).join('');
-  } else g.innerHTML = '<div class="empty"><h3>No Live Classes</h3></div>';
+  } else {
+    g.innerHTML = '<div class="empty"><h3>No Live Classes</h3></div>';
+  }
 }
-async function playLive(scheduleId, title) {
-  const res = await apiCall(`https://studyuk.site/pw/api/get-video-url?batch_id=${W.currentBatch.id}&childId=${scheduleId}`);
-  if(res.success && res.url) { W.currentVideo = { url: res.url, title }; showQModal(title, res.url); }
-  else toast('Failed to load', 'er');
-}
-
 // ===== NAVIGATION =====
 function show(id) {
   document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
