@@ -434,36 +434,31 @@ function toast(msg, type='') {
 
 // ===== API =====
 async function apiCall(url, options = {}) {
-  addLog(`🌐 ${options.method||'GET'} ${url.substring(0,80)}...`);
   try {
     const headers = { ...options.headers };
-    if(W.token) headers['Authorization'] = `Bearer ${W.token}`;
+    if (W.token) headers['Authorization'] = `Bearer ${W.token}`;
     headers['client-id'] = '5eb393ee95fab7468a79d189';
     headers['user-agent'] = 'Android';
     headers['Accept'] = 'application/json';
-    headers['Origin'] = 'https://studyuk.site';
-    headers['Referer'] = 'https://studyuk.site/';
-    if(options.method === 'POST') headers['Content-Type'] = 'application/json';
     
+    // ✅ FORCE PROXY FOR ALL EXTERNAL DOMAINS
     let finalUrl = url;
-    if(url.includes('studyuk.site') || url.includes('api.penpencil.co')) {
+    if (url.includes('studyuk.site') || url.includes('api.penpencil.co') || url.includes('videos.penpencil.co')) {
       finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
     }
     
-    const res = await fetch(finalUrl, { 
-      method: options.method || 'GET', 
-      headers, 
-      body: options.body ? JSON.stringify(options.body) : undefined 
+    const res = await fetch(finalUrl, {
+      method: options.method || 'GET',
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined
     });
     
-    if(res.status === 401) {
-      addLog('🔐 Token expired - logging out', 'warn');
-      localStorage.clear();
-      W.token = null;
-      show('pgLogin');
-      toast('Session expired. Please login again.', 'er');
-      return { success: false, message: 'Token expired', expired: true };
-    }
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch(e) {
+    return { success: false, message: e.message };
+  }
+}
     
     const text = await res.text();
     try { 
