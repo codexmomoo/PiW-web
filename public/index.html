@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 :root{
   --bg:#0a0a0f;--surf:#121218;--card:#181820;--card2:#202028;
   --bdr:#282830;--bdr2:#303038;
@@ -15,30 +15,33 @@
   --txt:#eeeef5;--mut:#6a6a80;--mut2:#8a8aa0;
   --ok:#4ade80;--err:#f87171;--warn:#fbbf24;
 }
-*{-webkit-font-smoothing:antialiased}
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden}
 
+/* PAGES */
 .page{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:1}
 .page.active{display:flex!important;z-index:10}
 .page.base{display:flex!important;z-index:1}
 @keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .page.active{animation:pgIn .22s ease}
 
+/* TOPBAR */
 .tb{background:var(--surf);border-bottom:1px solid var(--bdr);padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .tb-l{display:flex;align-items:center;gap:10px;flex:1}
-.bk{width:36px;height:36px;background:var(--card);border:1px solid var(--bdr2);border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mut2)}
+.bk{width:36px;height:36px;background:var(--card);border:1px solid var(--bdr2);border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mut2);flex-shrink:0}
 .bk:active{background:var(--acc);border-color:var(--acc);color:#fff}
 .bk svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
 .tb-title{font-weight:700;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ava{width:36px;height:36px;border-radius:50%;border:2px solid var(--acc);cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));font-weight:800;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center}
+.ava{width:36px;height:36px;border-radius:50%;border:2px solid var(--acc);cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));font-weight:800;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
+/* SCROLL CONTAINER */
 .sc{flex:1;overflow-y:auto;padding:14px;padding-bottom:90px}
 .sc::-webkit-scrollbar{display:none}
 
+/* BOTTOM NAV */
 .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);display:flex;z-index:20}
 .bnt{flex:1;padding:11px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:transparent;color:var(--mut);font-size:10px;font-weight:600;border:none}
 .bnt.on{color:var(--acc)}
-.bnt svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.bnt-icon{font-size:20px;line-height:1}
 
 /* LOGIN */
 #pgLogin{z-index:50;justify-content:center;align-items:center;padding:20px;background:radial-gradient(ellipse 100% 60% at 10% 0%,rgba(124,109,240,.2) 0%,transparent 50%),var(--bg)}
@@ -47,19 +50,21 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .blogo{width:76px;height:76px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;color:#fff;box-shadow:0 16px 48px rgba(124,109,240,.45)}
 .brand h1{font-size:26px;font-weight:800}
 .brand h1 span{color:var(--acc2)}
-.login-hint{background:rgba(124,109,240,.08);border:1px solid rgba(124,109,240,.2);border-radius:12px;padding:11px 14px;margin-bottom:16px;display:flex;gap:10px}
-.login-hint p{font-size:12px;color:var(--mut2)}
+.brand p{font-size:13px;color:var(--mut2);margin-top:6px}
+.login-hint{background:rgba(124,109,240,.08);border:1px solid rgba(124,109,240,.2);border-radius:12px;padding:11px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+.login-hint svg{flex-shrink:0;width:16px;height:16px;margin-top:1px;color:var(--acc2)}
+.login-hint p{font-size:12px;color:var(--mut2);line-height:1.5}
 .lcard{background:var(--surf);border:1px solid var(--bdr2);border-radius:22px;padding:22px}
 .ig{margin-bottom:14px}
-.ig label{display:block;font-size:10px;color:var(--mut2);margin-bottom:6px;text-transform:uppercase;font-weight:700}
-.ig input{width:100%;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:13px 15px;color:var(--txt);font-size:15px;outline:none}
+.ig label{display:block;font-size:10px;color:var(--mut2);margin-bottom:6px;text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+.ig input{width:100%;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:13px 15px;color:var(--txt);font-size:15px;outline:none;transition:border-color .2s}
 .ig input:focus{border-color:var(--acc);background:var(--card2)}
 .otp-row{display:flex;gap:8px}
-.otp-row .ig{flex:1}
-.otp-btn{background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:0 16px;color:var(--acc2);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
-.otp-btn:disabled{opacity:.5}
-.lbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:13px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px}
-.lbtn:disabled{opacity:.5}
+.otp-row .ig{flex:1;margin-bottom:0}
+.otp-btn{background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:0 16px;color:var(--acc2);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.otp-btn:disabled{opacity:.5;cursor:not-allowed}
+.lbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:13px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:14px;transition:opacity .2s}
+.lbtn:disabled{opacity:.5;cursor:not-allowed}
 .emsg{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:10px 13px;color:var(--err);font-size:13px;margin-top:10px;display:none}
 .emsg.on{display:block}
 
@@ -68,58 +73,83 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .setup-box{width:100%;max-width:400px;text-align:center}
 .setup-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px;color:#fff;margin:0 auto 18px;box-shadow:0 0 0 6px rgba(124,109,240,.15)}
 .setup-box h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.setup-box>p{font-size:13px;color:var(--mut2);margin-bottom:20px}
 .setup-card{background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;padding:18px;text-align:left}
-.setup-info-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
-.setup-info-icon{width:36px;height:36px;border-radius:10px;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center}
-.setup-info-lbl{font-size:10px;color:var(--mut2);font-weight:700;text-transform:uppercase}
-.setup-info-txt{font-size:14px;font-weight:600;margin-top:2px}
+.setup-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.setup-row:last-child{border-bottom:none}
+.setup-icon{width:36px;height:36px;border-radius:10px;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.setup-lbl{font-size:10px;color:var(--mut2);font-weight:700;text-transform:uppercase}
+.setup-val{font-size:14px;font-weight:600;margin-top:2px}
 .setup-cont{width:100%;padding:15px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:13px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:18px}
 
-/* CARDS */
-.cc{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;margin-bottom:12px;cursor:pointer}
+/* BATCH CARDS */
+.cc{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;margin-bottom:12px;cursor:pointer;position:relative;transition:border-color .2s}
 .cc:active{border-color:var(--acc)}
-.cimg{width:100%;height:120px;object-fit:cover;background:var(--surf)}
-.cph{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.cimg{width:100%;height:120px;object-fit:cover;background:var(--surf);display:block}
+.cph{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--surf)}
 .cbody{padding:12px 14px;display:flex;align-items:center;gap:10px}
-.cnm{font-weight:700;font-size:13px}
+.cbody-icon{font-size:20px;flex-shrink:0}
+.cbody-info{flex:1;min-width:0}
+.cnm{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmeta{font-size:11px;color:var(--mut2);margin-top:2px}
-.carrow{color:var(--mut);margin-left:auto}
-.fav-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.6);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
-.fav-btn.active svg{stroke:var(--err);fill:var(--err)}
+.carrow{color:var(--mut);font-size:18px;flex-shrink:0}
+.fav-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.6);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:2;transition:transform .2s}
+.fav-btn.active{background:rgba(248,113,113,.2)}
+.fav-btn:active{transform:scale(.9)}
 
 /* ROW CARDS */
-.rc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px}
-.rnum{width:36px;height:36px;border-radius:10px;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--acc2)}
-.rimgph{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px}
-.rtxt{flex:1}
-.rnm{font-weight:700;font-size:14px}
-.rsub{font-size:11px;color:var(--mut2)}
-.rpro{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px}
+.rc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .2s}
+.rc:active{border-color:var(--acc)}
+.rnum{width:36px;height:36px;border-radius:10px;background:rgba(124,109,240,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--acc2);flex-shrink:0}
+.rimgph{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.rtxt{flex:1;min-width:0}
+.rnm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rsub{font-size:11px;color:var(--mut2);margin-top:2px}
+.rbadge{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0}
 
 /* VIDEO LIST */
-.vc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;gap:10px}
-.vthph{width:90px;height:60px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px}
-.vnm{font-size:13px;font-weight:600}
+.vc{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:border-color .2s}
+.vc:active{border-color:var(--acc)}
+.vthph{width:90px;height:60px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.vtxt{flex:1;min-width:0}
+.vnm{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vmeta{font-size:11px;color:var(--mut2);margin-top:3px}
 
 /* PLAYER */
 #pgPlayer{background:#000}
-.player-tb{background:rgba(0,0,0,.9);padding:11px 14px;display:flex;align-items:center;gap:10px}
+.player-tb{background:rgba(0,0,0,.9);padding:11px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 #vplayer{width:100%;display:block;max-height:240px;background:#000}
-.player-info{padding:14px 16px;background:var(--bg)}
-.player-title{font-weight:700;font-size:15px}
+.player-body{flex:1;overflow-y:auto;background:var(--bg)}
+.player-body::-webkit-scrollbar{display:none}
+.player-info{padding:14px 16px}
+.player-title{font-weight:700;font-size:15px;line-height:1.4}
 .player-acts{display:flex;gap:8px;margin-top:14px}
-.pact{flex:1;padding:10px;border-radius:12px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);font-size:11px;font-weight:600;cursor:pointer}
-.pact.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
-.pact:disabled{opacity:.3}
+.pact{flex:1;padding:10px;border-radius:12px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);font-size:11px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.pact.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;color:#fff}
+.pact:disabled{opacity:.35;cursor:not-allowed}
 
 /* PDF PANEL */
-.pdf-panel{flex:1;display:flex;flex-direction:column;background:var(--bg)}
-.pdf-panel.hidden{display:none}
-.pdf-topbar{display:flex;padding:10px 14px;background:var(--surf);gap:8px}
-.pdftab{flex:1;padding:8px;border:1px solid var(--bdr2);border-radius:9px;background:var(--card);color:var(--mut2);font-size:12px;font-weight:600;cursor:pointer}
-.pdftab.on{background:var(--acc);color:#fff}
-.pdf-frame-wrap{flex:1}
-.pdf-frame-wrap iframe{width:100%;height:100%;border:none;background:#fff}
+.pdf-panel{display:none;flex-direction:column;background:var(--bg);min-height:300px}
+.pdf-panel.show{display:flex}
+.pdf-topbar{display:flex;padding:10px 14px;background:var(--surf);gap:8px;align-items:center;border-top:1px solid var(--bdr)}
+.pdftab{flex:1;padding:8px;border:1px solid var(--bdr2);border-radius:9px;background:var(--card);color:var(--mut2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.pdftab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.pdf-close{width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--bdr2);color:var(--mut2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pdf-frame{width:100%;height:280px;border:none;background:#fff}
+
+/* CONTENT TABS */
+.ctabs{display:flex;padding:10px 14px;gap:8px;background:var(--surf);border-bottom:1px solid var(--bdr);flex-shrink:0}
+
+/* LIVE PILLS */
+.lpill{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.2);border-radius:13px;padding:12px 14px;margin-bottom:14px;cursor:pointer}
+.ldot{width:8px;height:8px;background:#ff6b35;border-radius:50%;animation:pulse 1.4s infinite;flex-shrink:0}
+.ltxt{font-weight:700;font-size:13px;color:#ff6b35}
+
+/* LIVE TAG */
+.live-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase}
+.live-tag.live{background:rgba(248,113,113,.2);color:var(--err)}
+.live-tag.upcoming{background:rgba(251,191,36,.15);color:var(--warn)}
+.live-tag.ended{background:var(--card2);color:var(--mut2)}
 
 /* MODALS */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:flex;align-items:flex-end;justify-content:center}
@@ -128,47 +158,62 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .mhandle{width:40px;height:4px;background:var(--bdr2);border-radius:2px;margin:12px auto 0}
 .mhead{padding:16px 20px 10px}
 .mtitle{font-weight:700;font-size:15px}
-.mbody{padding:0 20px 20px}
+.msub{font-size:12px;color:var(--mut2);margin-top:3px}
+.mbody{padding:0 20px 24px}
 .qbtns{display:flex;gap:8px;flex-wrap:wrap}
-.qbtn{background:var(--card);border:1px solid var(--bdr2);border-radius:11px;padding:10px 18px;color:var(--txt);font-size:14px;font-weight:600;cursor:pointer}
-.mcancel{width:100%;margin-top:8px;padding:13px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;color:var(--mut2);font-size:13px;cursor:pointer}
-
-/* DEBUG CONSOLE */
-.debug-console{position:fixed;bottom:80px;left:10px;right:10px;background:#0a0a0f;border:1px solid var(--bdr2);border-radius:16px;z-index:1000;max-height:300px;display:flex;flex-direction:column}
-.debug-header{padding:10px 14px;background:var(--surf);border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between}
-.debug-header span{font-weight:700;font-size:12px;color:var(--acc2)}
-.debug-header button{background:var(--card);border:1px solid var(--bdr2);color:var(--txt);padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer}
-.debug-content{overflow-y:auto;padding:10px 14px;font-size:11px;font-family:monospace;max-height:250px;color:#a0a0b0}
-.debug-content .log-entry{margin-bottom:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-.debug-content .log-entry.success{color:#4ade80}
-.debug-content .log-entry.error{color:#f87171}
-.debug-content .log-entry.warn{color:#fbbf24}
-.debug-toggle{position:fixed;bottom:90px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--acc);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:1001}
-
-/* UTILS */
-.sw{display:flex;gap:8px;margin-bottom:14px}
-.si{flex:1;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:11px 14px;color:var(--txt);font-size:14px;outline:none}
-.sb{background:var(--acc);border:none;border-radius:12px;padding:11px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
-.sh{font-weight:700;font-size:10px;color:var(--mut2);text-transform:uppercase;margin:14px 0 10px}
-.empty{text-align:center;padding:48px 20px}
-.skel{background:linear-gradient(90deg,var(--card) 25%,var(--bdr) 50%,var(--card) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:14px}
-.sk-c{height:170px;margin-bottom:12px}
-.sk-r{height:70px;margin-bottom:10px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--bdr2);border-radius:12px;padding:11px 18px;font-size:13px;z-index:500;opacity:0;transition:opacity .25s}
-.toast.show{opacity:1}
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;display:inline-block}
-#lmbtn{width:100%;padding:13px;background:var(--card);border:1px solid var(--bdr2);border-radius:13px;color:var(--acc2);font-weight:700;font-size:13px;cursor:pointer;text-align:center}
-.lpill{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.2);border-radius:13px;padding:12px 14px;margin-bottom:14px;cursor:pointer}
-.ldot{width:8px;height:8px;background:#ff6b35;border-radius:50%;animation:pulse 1.4s infinite}
-.ltxt{font-weight:700;font-size:13px;color:#ff6b35}
-
-/* DEV */
-.dev-card{background:linear-gradient(135deg,rgba(124,109,240,.08),rgba(167,139,250,.04));border:1px solid rgba(124,109,240,.18);border-radius:16px;padding:18px;margin-bottom:12px}
+.qbtn{background:var(--card);border:1px solid var(--bdr2);border-radius:11px;padding:10px 20px;color:var(--txt);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.qbtn:hover{border-color:var(--acc);color:var(--acc)}
+.mcancel{width:100%;margin-top:12px;padding:13px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;color:var(--mut2);font-size:13px;cursor:pointer}
 
 /* SHEET */
 .sheet-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end}
 .sheet-box{width:100%;background:var(--surf);border-radius:24px 24px 0 0;padding:20px;border-top:1px solid var(--bdr2)}
 .sheet-handle{width:40px;height:4px;background:var(--bdr2);border-radius:2px;margin:0 auto 20px}
+
+/* DEBUG CONSOLE */
+.debug-fab{position:fixed;bottom:90px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);font-size:18px;cursor:pointer;z-index:1001;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.debug-panel{position:fixed;bottom:80px;left:10px;right:10px;background:var(--bg);border:1px solid var(--bdr2);border-radius:16px;z-index:1000;display:none;flex-direction:column;max-height:320px}
+.debug-panel.show{display:flex}
+.debug-head{padding:10px 14px;background:var(--surf);border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)}
+.debug-head-left{font-weight:700;font-size:12px;color:var(--acc2)}
+.debug-head-btns{display:flex;gap:6px}
+.debug-head-btns button{background:var(--card);border:1px solid var(--bdr2);color:var(--txt);padding:5px 10px;border-radius:7px;font-size:10px;cursor:pointer}
+.debug-body{overflow-y:auto;padding:10px 14px;font-size:11px;font-family:monospace;flex:1}
+.debug-body::-webkit-scrollbar{width:3px}
+.debug-body::-webkit-scrollbar-thumb{background:var(--bdr2)}
+.log-line{margin-bottom:5px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.5;word-break:break-all}
+.log-line.success{color:#4ade80}
+.log-line.error{color:#f87171}
+.log-line.warn{color:#fbbf24}
+.log-line.info{color:#a0a0c0}
+.log-time{color:#444;font-size:10px;margin-right:6px}
+
+/* UTILS */
+.sw{display:flex;gap:8px;margin-bottom:14px}
+.si{flex:1;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;padding:11px 14px;color:var(--txt);font-size:14px;outline:none}
+.si:focus{border-color:var(--acc)}
+.sb{background:var(--acc);border:none;border-radius:12px;padding:11px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+.sh{font-weight:700;font-size:10px;color:var(--mut2);text-transform:uppercase;margin:14px 0 10px;letter-spacing:.5px}
+.empty{text-align:center;padding:48px 20px;color:var(--mut2)}
+.empty h3{font-size:16px;margin-bottom:6px;color:var(--txt)}
+.empty p{font-size:13px}
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--bdr) 50%,var(--card) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:14px;margin-bottom:10px}
+.sk-card{height:170px}
+.sk-row{height:68px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--bdr2);border-radius:12px;padding:11px 18px;font-size:13px;z-index:500;opacity:0;transition:opacity .25s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;display:inline-block;vertical-align:middle}
+.lmbtn{width:100%;padding:13px;background:var(--card);border:1px solid var(--bdr2);border-radius:13px;color:var(--acc2);font-weight:700;font-size:13px;cursor:pointer;text-align:center;margin-top:4px;transition:opacity .2s}
+.lmbtn:disabled{opacity:.5;cursor:not-allowed}
+
+/* DEV CARD */
+.dev-card{background:linear-gradient(135deg,rgba(124,109,240,.08),rgba(167,139,250,.04));border:1px solid rgba(124,109,240,.18);border-radius:16px;padding:18px;margin-bottom:12px}
+.dev-name{font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--acc2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.dev-links{display:flex;gap:8px;margin-top:12px}
+.dev-link{flex:1;padding:10px;border-radius:11px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);text-decoration:none;text-align:center;font-size:13px;font-weight:600}
+
+/* PROFILE ACTIONS */
+.logout-btn{width:100%;padding:13px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-radius:13px;color:var(--err);font-weight:600;cursor:pointer;font-size:14px}
 
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
 @keyframes rot{to{transform:rotate(360deg)}}
@@ -177,618 +222,1110 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 </head>
 <body>
 
-<!-- DEBUG TOGGLE -->
-<button class="debug-toggle" id="debugToggle" onclick="toggleDebugConsole()">🐛</button>
+<!-- DEBUG FAB -->
+<button class="debug-fab" id="debugFab" onclick="toggleDebug()">🐛</button>
 
-<!-- DEBUG CONSOLE -->
-<div class="debug-console" id="debugConsole" style="display:none">
-  <div class="debug-header">
-    <span>🔧 Debug Console <span id="logCount">(0)</span></span>
-    <div style="display:flex;gap:6px">
-      <button onclick="copyLogs()">📋 Copy</button>
-      <button onclick="clearLogs()">🗑️ Clear</button>
-      <button onclick="toggleDebugConsole()">✕</button>
+<!-- DEBUG PANEL -->
+<div class="debug-panel" id="debugPanel">
+  <div class="debug-head">
+    <span class="debug-head-left">🔧 Debug Console <span id="logCount">(0)</span></span>
+    <div class="debug-head-btns">
+      <button onclick="copyLogs()">📋</button>
+      <button onclick="clearLogs()">🗑️</button>
+      <button onclick="toggleDebug()">✕</button>
     </div>
   </div>
-  <div class="debug-content" id="debugContent"></div>
+  <div class="debug-body" id="debugBody"></div>
 </div>
 
-<!-- LOGIN -->
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ==================== LOGIN PAGE ==================== -->
 <div class="page" id="pgLogin">
-<div class="lb">
-  <div class="brand">
-    <div class="blogo">PW</div>
-    <h1>Physics <span>Wallah</span></h1>
-    <p>Unofficial Web Player</p>
-  </div>
-  <div class="login-hint">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/></svg>
-    <p><strong>Use the same mobile number</strong> registered on Physics Wallah app.</p>
-  </div>
-  <div class="lcard">
-    <div class="ig">
-      <label>Mobile Number</label>
-      <input type="tel" id="mobileInput" placeholder="10-digit mobile number" maxlength="10">
+  <div class="lb">
+    <div class="brand">
+      <div class="blogo">PW</div>
+      <h1>Physics <span>Wallah</span></h1>
+      <p>Unofficial Web Player</p>
     </div>
-    <div class="otp-row">
+    <div class="login-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <p>Use the <strong>same mobile number</strong> registered on Physics Wallah app.</p>
+    </div>
+    <div class="lcard">
       <div class="ig">
-        <label>OTP</label>
-        <input type="text" id="otpInput" placeholder="6-digit OTP" maxlength="6">
+        <label>Mobile Number</label>
+        <input type="tel" id="mobileInput" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric">
       </div>
-      <button class="otp-btn" id="sendOtpBtn" onclick="sendOTP()">Send OTP</button>
+      <div class="otp-row" style="margin-bottom:14px">
+        <div class="ig" style="margin:0">
+          <label>OTP</label>
+          <input type="text" id="otpInput" placeholder="6-digit OTP" maxlength="6" inputmode="numeric">
+        </div>
+        <button class="otp-btn" id="sendOtpBtn" onclick="sendOTP()">Send OTP</button>
+      </div>
+      <button class="lbtn" id="loginBtn" onclick="verifyOTP()">
+        <span id="loginBtnTxt">Verify &amp; Login</span>
+      </button>
+      <div class="emsg" id="loginErr"></div>
     </div>
-    <button class="lbtn" id="loginBtn" onclick="verifyOTP()"><span id="loginBtnText">Verify & Login</span></button>
-    <div class="emsg" id="loginError"></div>
   </div>
 </div>
-</div>
 
-<!-- PROFILE SETUP -->
+<!-- ==================== PROFILE SETUP ==================== -->
 <div class="page" id="pgSetup">
-<div class="setup-box">
-  <div class="setup-avatar" id="setupAva">P</div>
-  <h2>Welcome, <span id="setupName">Student</span></h2>
-  <p>Your account is verified and ready.</p>
-  <div class="setup-card">
-    <div class="setup-info-row">
-      <div class="setup-info-icon">📱</div>
-      <div>
-        <div class="setup-info-lbl">Mobile</div>
-        <div class="setup-info-txt" id="setupMobile">—</div>
+  <div class="setup-box">
+    <div class="setup-avatar">🎓</div>
+    <h2>Welcome!</h2>
+    <p>Your account is verified and ready.</p>
+    <div class="setup-card">
+      <div class="setup-row">
+        <div class="setup-icon">📱</div>
+        <div>
+          <div class="setup-lbl">Mobile</div>
+          <div class="setup-val" id="setupMobile">—</div>
+        </div>
+      </div>
+      <div class="setup-row">
+        <div class="setup-icon">✅</div>
+        <div>
+          <div class="setup-lbl">Status</div>
+          <div class="setup-val" style="color:var(--ok)">Verified Account</div>
+        </div>
       </div>
     </div>
-    <div class="setup-info-row">
-      <div class="setup-info-icon">✅</div>
-      <div>
-        <div class="setup-info-lbl">Status</div>
-        <div class="setup-info-txt" style="color:var(--ok)">Verified Account</div>
-      </div>
-    </div>
+    <button class="setup-cont" onclick="goHome()">Continue to Dashboard →</button>
   </div>
-  <button class="setup-cont" onclick="goHome()">Continue to Dashboard</button>
-</div>
 </div>
 
-<!-- HOME -->
+<!-- ==================== HOME PAGE ==================== -->
 <div class="page base" id="pgHome">
   <div class="tb">
-    <div class="tb-title" id="htitle">Physics Wallah</div>
-    <div class="ava" id="avabtn" onclick="gotoSheet()">P</div>
+    <div class="tb-title" id="homeTitle">Physics Wallah</div>
+    <div class="ava" id="avabtn" onclick="openSheet()">P</div>
   </div>
-  <div id="t0" class="sc">
+
+  <!-- Tab: Batches -->
+  <div id="tabBatches" class="sc">
     <div class="sw">
-      <input class="si" id="sinp" placeholder="Search batches..." oninput="srch(this.value)">
-      <button class="sb" onclick="srch(document.getElementById('sinp').value)">🔍</button>
+      <input class="si" id="searchInp" placeholder="Search batches..." oninput="onSearch(this.value)">
+      <button class="sb" onclick="onSearch(document.getElementById('searchInp').value)">🔍</button>
     </div>
     <div class="sh">All Batches</div>
-    <div id="g0"></div>
-    <button id="lmbtn" onclick="lmc()">Load More ↓</button>
+    <div id="batchGrid"></div>
+    <button class="lmbtn" id="loadMoreBtn" onclick="loadMoreBatches()">Load More ↓</button>
   </div>
-  <div id="t1" class="sc" style="display:none">
+
+  <!-- Tab: Enrolled -->
+  <div id="tabEnrolled" class="sc" style="display:none">
     <div class="sh">My Batches</div>
-    <div id="g1"></div>
+    <div id="enrolledGrid"><div class="empty"><h3>No Enrolled Batches</h3><p>Enroll on the PW app first.</p></div></div>
   </div>
-  <div id="t2" class="sc" style="display:none">
+
+  <!-- Tab: Saved -->
+  <div id="tabSaved" class="sc" style="display:none">
     <div class="sh">Saved Batches</div>
-    <div id="g2"></div>
+    <div id="savedGrid"></div>
   </div>
-  <div id="t3" class="sc" style="display:none">
+
+  <!-- Tab: Profile -->
+  <div id="tabProfile" class="sc" style="display:none">
     <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:16px;margin-bottom:14px">
-      <div id="pava" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff">P</div>
-      <div><div id="pname" style="font-weight:700">Student</div><div id="pmobile" style="font-size:12px;color:var(--mut2)">—</div></div>
+      <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff">P</div>
+      <div>
+        <div style="font-weight:700">PW Student</div>
+        <div id="profileMobile" style="font-size:12px;color:var(--mut2)">—</div>
+      </div>
     </div>
     <div class="sh">Developer</div>
     <div class="dev-card">
-      <div style="font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--acc2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">@CODEXMOMO</div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <a href="https://t.me/CODEXUPDATEZ" target="_blank" style="flex:1;padding:10px;border-radius:11px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);text-decoration:none;text-align:center">Telegram</a>
-        <a href="https://github.com/codexmomoo" target="_blank" style="flex:1;padding:10px;border-radius:11px;border:1px solid var(--bdr2);background:var(--card);color:var(--txt);text-decoration:none;text-align:center">GitHub</a>
+      <div class="dev-name">@CODEXMOMO</div>
+      <div style="font-size:12px;color:var(--mut2);margin-top:4px">PW Web Player</div>
+      <div class="dev-links">
+        <a href="https://t.me/CODEXUPDATEZ" target="_blank" class="dev-link">📨 Telegram</a>
+        <a href="https://github.com/codexmomoo" target="_blank" class="dev-link">💻 GitHub</a>
       </div>
     </div>
-    <button onclick="logout()" style="width:100%;padding:13px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-radius:13px;color:var(--err);font-weight:600;cursor:pointer">🚪 Logout</button>
+    <div class="sh">Account</div>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
   </div>
+
   <nav class="bnav">
-    <button class="bnt on" id="bn0" onclick="swtab(0)">📚 Batches</button>
-    <button class="bnt" id="bn1" onclick="swtab(1)">📖 Enrolled</button>
-    <button class="bnt" id="bn2" onclick="swtab(2)">❤️ Saved</button>
-    <button class="bnt" id="bn3" onclick="swtab(3)">👤 Profile</button>
+    <button class="bnt on" id="bn0" onclick="switchTab(0)"><div class="bnt-icon">📚</div>Batches</button>
+    <button class="bnt" id="bn1" onclick="switchTab(1)"><div class="bnt-icon">📖</div>Enrolled</button>
+    <button class="bnt" id="bn2" onclick="switchTab(2)"><div class="bnt-icon">❤️</div>Saved</button>
+    <button class="bnt" id="bn3" onclick="switchTab(3)"><div class="bnt-icon">👤</div>Profile</button>
   </nav>
 </div>
 
-<!-- SUBJECTS -->
+<!-- ==================== SUBJECTS PAGE ==================== -->
 <div class="page" id="pgSubj">
   <div class="tb">
     <div class="tb-l">
-      <div class="bk" onclick="back('pgHome')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title" id="stitle">Subjects</div>
+      <div class="bk" onclick="showPage('pgHome')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="tb-title" id="subjTitle">Subjects</div>
     </div>
   </div>
   <div class="sc">
-    <div class="lpill" onclick="goLive()"><div class="ldot"></div><span class="ltxt">Live Classes</span> →</div>
+    <div class="lpill" onclick="goLive()">
+      <div class="ldot"></div>
+      <span class="ltxt">Live Classes</span>
+      <span style="color:var(--mut2);margin-left:auto">→</span>
+    </div>
     <div class="sh">All Subjects</div>
-    <div id="gs"></div>
+    <div id="subjGrid"></div>
   </div>
 </div>
 
-<!-- TOPICS -->
+<!-- ==================== TOPICS PAGE ==================== -->
 <div class="page" id="pgTopic">
   <div class="tb">
     <div class="tb-l">
-      <div class="bk" onclick="back('pgSubj')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title" id="ttitle">Topics</div>
+      <div class="bk" onclick="showPage('pgSubj')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="tb-title" id="topicTitle">Topics</div>
     </div>
   </div>
-  <div class="sc"><div class="sh">All Topics</div><div id="gt"></div></div>
+  <div class="sc">
+    <div class="sh">All Topics</div>
+    <div id="topicGrid"></div>
+  </div>
 </div>
 
-<!-- CONTENT -->
+<!-- ==================== CONTENT PAGE ==================== -->
 <div class="page" id="pgContent">
   <div class="tb">
     <div class="tb-l">
-      <div class="bk" onclick="back('pgTopic')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <div class="tb-title" id="ctitle">Content</div>
+      <div class="bk" onclick="showPage('pgTopic')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="tb-title" id="contentTitle">Content</div>
     </div>
   </div>
-  <div class="sc" style="padding:0">
-    <div style="display:flex;padding:10px 14px;gap:8px;background:var(--surf)">
-      <button class="pdftab on" id="tabVideos" onclick="switchContentTab(0)">Videos</button>
-      <button class="pdftab" id="tabNotes" onclick="switchContentTab(1)">Notes</button>
-      <button class="pdftab" id="tabDpp" onclick="switchContentTab(2)">DPP</button>
-    </div>
-    <div style="padding:14px"><div id="gcontent"></div></div>
+  <div class="ctabs">
+    <button class="pdftab on" id="ctab0" onclick="switchContentTab(0)">▶ Videos</button>
+    <button class="pdftab" id="ctab1" onclick="switchContentTab(1)">📄 Notes</button>
+    <button class="pdftab" id="ctab2" onclick="switchContentTab(2)">📋 DPP</button>
+  </div>
+  <div class="sc" style="padding-top:10px;padding-bottom:20px">
+    <div id="contentGrid"></div>
   </div>
 </div>
 
-<!-- PLAYER -->
+<!-- ==================== PLAYER PAGE ==================== -->
 <div class="page" id="pgPlayer">
   <div class="player-tb">
-    <div class="bk" onclick="closePlayer()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-    <div class="tb-title" style="color:#fff" id="ptbar">Video</div>
-  </div>
-  <div class="video-wrap"><video id="vplayer" controls playsinline></video></div>
-  <div class="player-info">
-    <div class="player-title" id="ptitle">Loading...</div>
-    <div class="player-acts">
-      <button class="pact pri" onclick="showQPicker()">Quality</button>
-      <button class="pact" id="pbNotes" onclick="openPdf('notes')" disabled>Notes</button>
-      <button class="pact" id="pbDpp" onclick="openPdf('dpp')" disabled>DPP</button>
+    <div class="bk" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);color:#fff" onclick="closePlayer()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     </div>
+    <div class="tb-title" style="color:#fff" id="playerTopTitle">Video</div>
   </div>
-  <div class="pdf-panel hidden" id="pdfPanel">
-    <div class="pdf-topbar">
-      <button class="pdftab on" id="pdfTabNotes" onclick="switchPdfTab('notes')">Notes</button>
-      <button class="pdftab" id="pdfTabDpp" onclick="switchPdfTab('dpp')">DPP</button>
-      <div class="bk" onclick="closePdfPanel()" style="margin-left:auto">✕</div>
+  <video id="vplayer" controls playsinline></video>
+  <div class="player-body">
+    <div class="player-info">
+      <div class="player-title" id="playerTitle">Loading...</div>
+      <div class="player-acts">
+        <button class="pact pri" onclick="openQualityPicker()">⚙️ Quality</button>
+        <button class="pact" id="btnNotes" onclick="openPdf('notes')" disabled>📄 Notes</button>
+        <button class="pact" id="btnDpp" onclick="openPdf('dpp')" disabled>📋 DPP</button>
+      </div>
     </div>
-    <div class="pdf-frame-wrap"><iframe id="pdfFrame"></iframe></div>
+    <div class="pdf-panel" id="pdfPanel">
+      <div class="pdf-topbar">
+        <button class="pdftab on" id="pdfTabNotes" onclick="switchPdfTab('notes')">Notes</button>
+        <button class="pdftab" id="pdfTabDpp" onclick="switchPdfTab('dpp')">DPP</button>
+        <button class="pdf-close" onclick="closePdfPanel()">✕</button>
+      </div>
+      <iframe id="pdfFrame" class="pdf-frame" allowfullscreen></iframe>
+    </div>
   </div>
 </div>
 
-<!-- LIVE -->
+<!-- ==================== LIVE PAGE ==================== -->
 <div class="page" id="pgLive">
   <div class="tb">
     <div class="tb-l">
-      <div class="bk" onclick="back('pgSubj')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div class="bk" onclick="showPage('pgSubj')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
       <div class="tb-title">Live Classes</div>
     </div>
   </div>
-  <div class="sc"><div id="gl"></div></div>
+  <div class="sc"><div id="liveGrid"></div></div>
 </div>
 
-<!-- SHEET -->
+<!-- ==================== PROFILE SHEET ==================== -->
 <div class="sheet-ov" id="sheetOv" onclick="closeSheet(event)">
   <div class="sheet-box">
     <div class="sheet-handle"></div>
     <div style="display:flex;align-items:center;gap:13px;margin-bottom:18px">
-      <div id="sava" style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff">P</div>
-      <div><div id="snm" style="font-weight:700">Student</div><div id="smobile" style="font-size:12px;color:var(--mut2)">—</div></div>
+      <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff">PW</div>
+      <div>
+        <div style="font-weight:700">PW Student</div>
+        <div id="sheetMobile" style="font-size:12px;color:var(--mut2)">—</div>
+      </div>
     </div>
-    <button onclick="logout()" style="width:100%;padding:13px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-radius:12px;color:var(--err);font-weight:600;cursor:pointer">Logout</button>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
+<!-- ==================== SCRIPTS ==================== -->
 <script>
-// ===== CONFIG =====
-const CONFIG = { maintenance: false, maintenanceMsg: "We're upgrading.", notice: true, noticeTitle: "PW Web Player", noticeMsg: "Use the same mobile number registered on Physics Wallah.", noticeDismissable: true };
+'use strict';
 
-// ===== DEBUG =====
-const debugLogs = [];
-function addLog(msg, type='info') {
-  debugLogs.push({ msg, type, time: new Date().toLocaleTimeString() });
-  console.log(`[${type}]`, msg);
-  const c = document.getElementById('debugContent');
-  if(c) {
-    const d = document.createElement('div');
-    d.className = `log-entry ${type}`;
-    d.innerHTML = `<span style="color:#666">${debugLogs[debugLogs.length-1].time}</span> ${msg}`;
-    c.appendChild(d);
-    c.scrollTop = c.scrollHeight;
-  }
-  document.getElementById('logCount').textContent = `(${debugLogs.length})`;
-}
-function toggleDebugConsole() { const e = document.getElementById('debugConsole'); e.style.display = e.style.display === 'none' ? 'flex' : 'none'; }
-function copyLogs() { navigator.clipboard?.writeText(debugLogs.map(l => `[${l.time}] ${l.msg}`).join('\n')); toast('Copied!'); }
-function clearLogs() { debugLogs.length = 0; document.getElementById('debugContent').innerHTML = ''; document.getElementById('logCount').textContent = '(0)'; }
-
-// ===== STATE =====
-const W = {
-  token: localStorage.getItem('pw_token'), user: JSON.parse(localStorage.getItem('pw_user')||'null'), mobile: localStorage.getItem('pw_mobile')||'',
-  batches: [], batchPage: 0, hasMore: true, searchQuery: '',
-  currentBatch: null, currentSubject: null, currentTopic: null, currentContentType: 0,
-  currentVideo: null, pdfNotes: null, pdfDpp: null,
+// ============================================================
+// CONFIG
+// ============================================================
+const CFG = {
+  maintenance: false,
+  notice: true,
+  noticeMsg: 'Use the same mobile number registered on Physics Wallah app.',
+  clientId: '5eb393ee95fab7468a79d189',
 };
 
-let hls = null, toastTimer = null;
+// ============================================================
+// STATE
+// ============================================================
+const S = {
+  token: localStorage.getItem('pw_token') || null,
+  mobile: localStorage.getItem('pw_mobile') || '',
+  batch: null,    // { id, name }
+  subject: null,  // { slug, name }
+  topic: null,    // { id, name }
+  contentTab: 0,
+  video: null,    // { url, title }
+  pdfNotes: null,
+  pdfDpp: null,
+  batches: [],
+  batchPage: 0,
+  hasMore: true,
+  searchQuery: '',
+  homeTab: 0,
+};
 
-// ===== HELPERS =====
-function esc(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function toast(msg, type='') {
+let hlsInstance = null;
+let toastTimer = null;
+let logLines = [];
+
+// ============================================================
+// DEBUG LOGGER
+// ============================================================
+function log(msg, type = 'info') {
+  const t = new Date().toLocaleTimeString('en', { hour12: false });
+  logLines.push({ t, msg, type });
+
+  const body = document.getElementById('debugBody');
+  if (body) {
+    const el = document.createElement('div');
+    el.className = `log-line ${type}`;
+    el.innerHTML = `<span class="log-time">${t}</span>${escHtml(String(msg))}`;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+  }
+  const cnt = document.getElementById('logCount');
+  if (cnt) cnt.textContent = `(${logLines.length})`;
+
+  console[type === 'error' ? 'error' : 'log'](`[PW][${type}]`, msg);
+}
+
+function toggleDebug() {
+  const p = document.getElementById('debugPanel');
+  p.classList.toggle('show');
+}
+
+function clearLogs() {
+  logLines = [];
+  document.getElementById('debugBody').innerHTML = '';
+  document.getElementById('logCount').textContent = '(0)';
+}
+
+function copyLogs() {
+  const txt = logLines.map(l => `[${l.t}] [${l.type}] ${l.msg}`).join('\n');
+  navigator.clipboard?.writeText(txt).then(() => toast('Logs copied!'));
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className = 'toast show' + (type?' '+type:'');
-  if(toastTimer) clearTimeout(toastTimer);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-// ===== API =====
-async function apiCall(url, options = {}) {
-  try {
-    const headers = { ...options.headers };
-    if (W.token) headers['Authorization'] = `Bearer ${W.token}`;
-    headers['client-id'] = '5eb393ee95fab7468a79d189';
-    headers['user-agent'] = 'Android';
-    headers['Accept'] = 'application/json';
-    
-    // ✅ FORCE PROXY FOR ALL EXTERNAL DOMAINS
-    let finalUrl = url;
-    if (url.includes('studyuk.site') || url.includes('api.penpencil.co') || url.includes('videos.penpencil.co')) {
-      finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
-    }
-    
-    const res = await fetch(finalUrl, {
-      method: options.method || 'GET',
-      headers,
-      body: options.body ? JSON.stringify(options.body) : undefined
-    });
-    
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch(e) {
-    return { success: false, message: e.message };
-  }
+function showSkel(containerId, type = 'row', count = 3) {
+  const g = document.getElementById(containerId);
+  if (!g) return;
+  g.innerHTML = Array(count).fill(`<div class="skel ${type === 'card' ? 'sk-card' : 'sk-row'}"></div>`).join('');
 }
-    
-    const text = await res.text();
-    try { 
-      const json = JSON.parse(text);
-      addLog(`✅ Response: ${JSON.stringify(json).substring(0, 100)}...`, json.success ? 'success' : 'warn');
-      return json;
+
+// ============================================================
+// API — SINGLE FUNCTION, NO DUPLICATE
+// ============================================================
+async function api(url, opts = {}) {
+  // Route external URLs through Vercel proxy
+  let finalUrl = url;
+  const external = [
+    'studyuk.site',
+    'api.penpencil.co',
+    'videos.penpencil.co',
+    'd1d34p8vz63oiq.cloudfront.net',
+    'akamaized.net',
+    'cloudfront.net',
+    'pw.live',
+  ];
+  const needsProxy = external.some(d => url.includes(d));
+  if (needsProxy) {
+    finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+  }
+
+  const headers = {
+    'Accept': 'application/json',
+    'client-id': CFG.clientId,
+    'user-agent': 'Android',
+    ...(opts.headers || {}),
+  };
+  if (S.token) {
+    headers['Authorization'] = `Bearer ${S.token}`;
+  }
+
+  const fetchOpts = {
+    method: opts.method || 'GET',
+    headers,
+  };
+  if (opts.body) {
+    headers['Content-Type'] = 'application/json';
+    fetchOpts.body = JSON.stringify(opts.body);
+  }
+
+  log(`→ ${fetchOpts.method} ${url.length > 100 ? url.slice(0, 100) + '…' : url}`);
+
+  try {
+    const res = await fetch(finalUrl, fetchOpts);
+
+    // AUTO-LOGOUT on 401
+    if (res.status === 401) {
+      log(`⚠️ 401 on ${url}`, 'warn');
+      // Only auto-logout for non-login endpoints
+      if (!url.includes('login')) {
+        autoLogout();
+        return { success: false, message: 'Session expired' };
+      }
     }
-    catch { return { success: false, message: text }; }
-  } catch(e) {
-    addLog(`❌ API Error: ${e.message}`, 'error');
+
+    const text = await res.text();
+    log(`← ${res.status} | ${text.slice(0, 150)}`, res.ok ? 'success' : 'warn');
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { success: false, message: text.slice(0, 200) };
+    }
+  } catch (e) {
+    log(`✗ Fetch error: ${e.message}`, 'error');
     return { success: false, message: e.message };
   }
 }
 
-// ===== AUTH =====
-let otpCooldown = 0;
+function autoLogout() {
+  localStorage.removeItem('pw_token');
+  localStorage.removeItem('pw_mobile');
+  S.token = null;
+  S.mobile = '';
+  toast('Session expired. Please login again.');
+  setTimeout(() => showPage('pgLogin'), 1500);
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+let otpInterval = null;
+
 async function sendOTP() {
   const mobile = document.getElementById('mobileInput').value.trim();
-  if(mobile.length !== 10) {
-    document.getElementById('loginError').classList.add('on');
-    document.getElementById('loginError').textContent = 'Enter 10-digit mobile';
+  hideLoginErr();
+
+  if (!/^\d{10}$/.test(mobile)) {
+    showLoginErr('Enter a valid 10-digit mobile number.');
     return;
   }
+
   const btn = document.getElementById('sendOtpBtn');
-  btn.disabled = true; btn.textContent = 'Sending...';
-  const res = await apiCall('https://studyuk.site/pw/login/get-otp', { method: 'POST', body: { phone_number: mobile } });
-  if(res.success) {
-    toast('OTP sent!', 'ok');
-    otpCooldown = 30;
-    const t = setInterval(() => { otpCooldown--; btn.textContent = `Resend (${otpCooldown}s)`; if(otpCooldown<=0) { clearInterval(t); btn.disabled = false; btn.textContent = 'Send OTP'; } }, 1000);
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  log(`Sending OTP to ${mobile}`);
+  const res = await api('https://studyuk.site/pw/login/get-otp', {
+    method: 'POST',
+    body: { phone_number: mobile },
+  });
+
+  if (res && res.success) {
+    toast('OTP sent! Check your SMS.');
+    log('OTP sent successfully', 'success');
+    startOtpCooldown(btn);
   } else {
-    document.getElementById('loginError').classList.add('on');
-    document.getElementById('loginError').textContent = res.message || 'Failed';
-    btn.disabled = false; btn.textContent = 'Send OTP';
+    const msg = res?.message || 'Failed to send OTP. Try again.';
+    showLoginErr(msg);
+    log(`OTP send failed: ${msg}`, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Send OTP';
   }
+}
+
+function startOtpCooldown(btn) {
+  let secs = 30;
+  btn.textContent = `Resend (${secs}s)`;
+  clearInterval(otpInterval);
+  otpInterval = setInterval(() => {
+    secs--;
+    if (secs <= 0) {
+      clearInterval(otpInterval);
+      btn.disabled = false;
+      btn.textContent = 'Send OTP';
+    } else {
+      btn.textContent = `Resend (${secs}s)`;
+    }
+  }, 1000);
 }
 
 async function verifyOTP() {
   const mobile = document.getElementById('mobileInput').value.trim();
   const otp = document.getElementById('otpInput').value.trim();
-  if(mobile.length !== 10 || otp.length !== 6) {
-    document.getElementById('loginError').classList.add('on');
-    document.getElementById('loginError').textContent = 'Enter mobile and 6-digit OTP';
-    return;
-  }
-  const btn = document.getElementById('loginBtn'), btnText = document.getElementById('loginBtnText');
-  btn.disabled = true; btnText.innerHTML = '<span class="spin"></span>';
-  const res = await apiCall('https://studyuk.site/pw/login/verify-otp', { method: 'POST', body: { phone_number: mobile, otp } });
-  if(res.success) {
-    W.token = res.token; W.mobile = mobile; W.user = { mobile };
-    localStorage.setItem('pw_token', W.token); localStorage.setItem('pw_user', JSON.stringify(W.user)); localStorage.setItem('pw_mobile', mobile);
-    addLog('✅ Login success', 'success');
+  hideLoginErr();
+
+  if (!/^\d{10}$/.test(mobile)) { showLoginErr('Enter a valid 10-digit mobile number.'); return; }
+  if (!/^\d{6}$/.test(otp)) { showLoginErr('Enter a valid 6-digit OTP.'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  const btnTxt = document.getElementById('loginBtnTxt');
+  btn.disabled = true;
+  btnTxt.innerHTML = '<span class="spin"></span> Verifying…';
+
+  log(`Verifying OTP for ${mobile}`);
+  const res = await api('https://studyuk.site/pw/login/verify-otp', {
+    method: 'POST',
+    body: { phone_number: mobile, otp },
+  });
+
+  if (res && res.success && res.data?.access_token) {
+    // ✅ CORRECT token extraction: res.data.access_token
+    S.token = res.data.access_token;
+    S.mobile = mobile;
+    localStorage.setItem('pw_token', S.token);
+    localStorage.setItem('pw_mobile', mobile);
+    log('Login successful ✓', 'success');
     showSetup();
   } else {
-    document.getElementById('loginError').classList.add('on');
-    document.getElementById('loginError').textContent = res.message || 'Invalid OTP';
-    btn.disabled = false; btnText.textContent = 'Verify & Login';
+    const msg = res?.message || 'Invalid OTP. Please try again.';
+    showLoginErr(msg);
+    log(`Login failed: ${msg}`, 'error');
+    btn.disabled = false;
+    btnTxt.textContent = 'Verify & Login';
   }
+}
+
+function showLoginErr(msg) {
+  const el = document.getElementById('loginErr');
+  el.textContent = msg;
+  el.classList.add('on');
+}
+function hideLoginErr() {
+  document.getElementById('loginErr').classList.remove('on');
 }
 
 function showSetup() {
-  document.getElementById('setupMobile').textContent = W.mobile;
-  show('pgSetup');
+  document.getElementById('setupMobile').textContent = S.mobile;
+  showPage('pgSetup');
 }
 
 function goHome() {
-  W.batches = []; W.batchPage = 0; W.hasMore = true;
-  show('pgHome'); swtab(0);
-  loadBatches(true); loadProf();
+  showPage('pgHome');
+  switchTab(0);
+  updateProfileUI();
+  resetBatches();
+  fetchBatches();
 }
 
-function loadProf() {
-  const m = W.mobile || '';
-  ['pava','sava','avabtn'].forEach(id => { const e=document.getElementById(id); if(e)e.textContent='P'; });
-  ['pname','snm'].forEach(id => { const e=document.getElementById(id); if(e)e.textContent='PW Student'; });
-  ['pmobile','smobile'].forEach(id => { const e=document.getElementById(id); if(e)e.textContent=m; });
+function updateProfileUI() {
+  const m = S.mobile || '—';
+  ['profileMobile', 'sheetMobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = m;
+  });
 }
 
-// ===== BATCHES =====
-async function loadBatches(reset) {
-  if(reset) { W.batchPage = 0; W.batches = []; W.hasMore = true; }
-  const g = document.getElementById('g0');
-  if(reset) g.innerHTML = '<div class="skel sk-c"></div>';
-  W.batchPage++;
-  const res = await apiCall(`https://studyuk.site/pw/api.php?page=${W.batchPage}`);
-  if(res.success && res.batches) {
-    if(reset) W.batches = res.batches; else W.batches = [...W.batches, ...res.batches];
-    W.hasMore = res.batches.length >= 10;
-    renderBatches();
-  } else if(reset) g.innerHTML = '<div class="empty"><h3>No Batches</h3></div>';
-  updateLoadMore();
+function logout() {
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  localStorage.clear();
+  S.token = null; S.mobile = '';
+  closeSheet();
+  showPage('pgLogin');
+  toast('Logged out successfully.');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    if (!p.classList.contains('base')) p.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'flex';
+    target.classList.add('active');
+  }
+}
+
+function switchTab(n) {
+  S.homeTab = n;
+  const tabs = ['tabBatches', 'tabEnrolled', 'tabSaved', 'tabProfile'];
+  tabs.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = i === n ? 'block' : 'none';
+  });
+  const btns = ['bn0', 'bn1', 'bn2', 'bn3'];
+  btns.forEach((id, i) => document.getElementById(id)?.classList.toggle('on', i === n));
+
+  if (n === 2) renderSaved();
+}
+
+function openSheet() {
+  document.getElementById('sheetOv').style.display = 'flex';
+}
+function closeSheet(e) {
+  if (!e || e.target === document.getElementById('sheetOv')) {
+    document.getElementById('sheetOv').style.display = 'none';
+  }
+}
+
+// ============================================================
+// BATCHES
+// ============================================================
+function resetBatches() {
+  S.batches = [];
+  S.batchPage = 0;
+  S.hasMore = true;
+  S.searchQuery = '';
+  document.getElementById('searchInp').value = '';
+}
+
+async function fetchBatches(append = false) {
+  if (!S.hasMore && append) { toast('All batches loaded!'); return; }
+
+  if (!append) showSkel('batchGrid', 'card', 2);
+
+  S.batchPage++;
+  log(`Fetching batches page ${S.batchPage}`);
+  const res = await api(`https://studyuk.site/pw/api.php?page=${S.batchPage}`);
+
+  if (res && res.success && Array.isArray(res.batches)) {
+    if (append) {
+      S.batches = [...S.batches, ...res.batches];
+    } else {
+      S.batches = res.batches;
+    }
+    S.hasMore = res.batches.length >= 10;
+    log(`Loaded ${res.batches.length} batches (total: ${S.batches.length})`, 'success');
+  } else {
+    S.hasMore = false;
+    if (!append) {
+      document.getElementById('batchGrid').innerHTML = '<div class="empty"><h3>No Batches Found</h3><p>Check your connection and try again.</p></div>';
+    }
+    log(`Batches failed: ${res?.message}`, 'error');
+  }
+
+  renderBatches();
+  const lmBtn = document.getElementById('loadMoreBtn');
+  if (lmBtn) {
+    lmBtn.disabled = !S.hasMore;
+    lmBtn.textContent = S.hasMore ? 'Load More ↓' : '✓ All Loaded';
+  }
+}
+
+function loadMoreBatches() {
+  fetchBatches(true);
+}
+
+function onSearch(q) {
+  S.searchQuery = q.toLowerCase().trim();
+  renderBatches();
 }
 
 function renderBatches() {
-  const g = document.getElementById('g0'), favs = JSON.parse(localStorage.getItem('pw_fav_batches')||'{}');
-  const filtered = W.batches.filter(b => !W.searchQuery || b.name.toLowerCase().includes(W.searchQuery.toLowerCase()));
-  if(!filtered.length) { g.innerHTML = '<div class="empty"><h3>No Batches</h3></div>'; return; }
-  g.innerHTML = filtered.map(b => {
+  const grid = document.getElementById('batchGrid');
+  const favs = JSON.parse(localStorage.getItem('pw_favs') || '{}');
+  const list = S.searchQuery
+    ? S.batches.filter(b => b.name?.toLowerCase().includes(S.searchQuery))
+    : S.batches;
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><h3>No Batches</h3><p>Try a different search.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(b => {
     const isFav = !!favs[b._id];
-    return `<div class="cc" onclick="openSubjects('${b._id}','${esc(b.name)}')">
-      ${b.previewImage ? `<img class="cimg" src="${esc(b.previewImage)}">` : '<div class="cph">📚</div>'}
-      <button class="fav-btn ${isFav?'active':''}" onclick="event.stopPropagation();toggleFavBatch('${b._id}','${esc(b.name)}','${esc(b.previewImage||'')}',this)">❤️</button>
-      <div class="cbody"><div>📘</div><div><div class="cnm">${esc(b.name)}</div><div class="cmeta">${esc(b.byName||'')}</div></div><div class="carrow">›</div></div>
+    const img = b.previewImage
+      ? `<img class="cimg" src="${escHtml(b.previewImage)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+        + `<div class="cph" style="display:none">📚</div>`
+      : `<div class="cph">📚</div>`;
+    return `<div class="cc" onclick="openSubjects('${escHtml(b._id)}','${escHtml(b.name || 'Batch')}')">
+      ${img}
+      <button class="fav-btn ${isFav ? 'active' : ''}" 
+        onclick="event.stopPropagation();toggleFav('${escHtml(b._id)}','${escHtml(b.name || 'Batch')}','${escHtml(b.previewImage || '')}',this)"
+        title="${isFav ? 'Remove from saved' : 'Save batch'}">
+        ${isFav ? '❤️' : '🤍'}
+      </button>
+      <div class="cbody">
+        <div class="cbody-icon">📘</div>
+        <div class="cbody-info">
+          <div class="cnm">${escHtml(b.name || 'Batch')}</div>
+          <div class="cmeta">${escHtml(b.byName || 'Physics Wallah')}</div>
+        </div>
+        <div class="carrow">›</div>
+      </div>
     </div>`;
   }).join('');
 }
 
-function toggleFavBatch(id, name, img, btn) {
-  const favs = JSON.parse(localStorage.getItem('pw_fav_batches')||'{}');
-  if(favs[id]) { delete favs[id]; btn.classList.remove('active'); } else { favs[id] = {id, name, img}; btn.classList.add('active'); }
-  localStorage.setItem('pw_fav_batches', JSON.stringify(favs));
-  if(W.tab === 2) loadFavs();
-}
-
-function loadFavs() {
-  const favs = Object.values(JSON.parse(localStorage.getItem('pw_fav_batches')||'{}'));
-  const g = document.getElementById('g2');
-  if(!favs.length) { g.innerHTML = '<div class="empty"><h3>No Saved Batches</h3></div>'; return; }
-  g.innerHTML = favs.map(b => `<div class="cc" onclick="openSubjects('${b.id}','${esc(b.name)}')"><div class="cph">📚</div><div class="cbody"><div>📘</div><div class="cnm">${esc(b.name)}</div></div></div>`).join('');
-}
-
-function srch(q) { W.searchQuery = q; renderBatches(); }
-function lmc() { if(W.hasMore) loadBatches(false); else toast('All loaded!'); }
-function updateLoadMore() { const b = document.getElementById('lmbtn'); b.disabled = !W.hasMore; b.textContent = W.hasMore ? 'Load More ↓' : '✓ All Loaded'; }
-
-// ===== SUBJECTS =====
-async function openSubjects(batchId, batchName) {
-  W.currentBatch = { id: batchId, name: batchName };
-  document.getElementById('stitle').textContent = batchName;
-  show('pgSubj');
-  const g = document.getElementById('gs');
-  g.innerHTML = '<div class="skel sk-r"></div>';
-  
-  // ✅ Token query param add karo
-  const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}&token=${W.token}`);
-  
-  addLog(`Subjects response: ${JSON.stringify(res).substring(0, 150)}`);
-  
-  if(res.success && res.data?.subjects) {
-    g.innerHTML = res.data.subjects.map((s,i) => `<div class="rc" onclick="openTopics('${s.slug}','${esc(s.subject)}')">
-      <div class="rimgph">${['📗','📘','📙','📕'][i%4]}</div>
-      <div class="rtxt"><div class="rnm">${esc(s.subject)}</div><div class="rsub">Tap to view topics</div></div>
-      <div class="rpro">PRO</div>
-    </div>`).join('');
+function toggleFav(id, name, img, btn) {
+  const favs = JSON.parse(localStorage.getItem('pw_favs') || '{}');
+  if (favs[id]) {
+    delete favs[id];
+    btn.classList.remove('active');
+    btn.textContent = '🤍';
+    toast('Removed from saved.');
   } else {
-    g.innerHTML = '<div class="empty"><h3>No Subjects</h3><p>Try logging out and back in</p></div>';
+    favs[id] = { id, name, img };
+    btn.classList.add('active');
+    btn.textContent = '❤️';
+    toast('Saved!');
   }
+  localStorage.setItem('pw_favs', JSON.stringify(favs));
+  if (S.homeTab === 2) renderSaved();
 }
 
-// ===== TOPICS =====
-async function openTopics(subjectSlug, subjectName) {
-  W.currentSubject = { slug: subjectSlug, name: subjectName };
-  document.getElementById('ttitle').textContent = subjectName;
-  show('pgTopic');
-  
-  const g = document.getElementById('gt');
-  g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
-  
-  const url = `https://api.penpencil.co/v2/batches/${W.currentBatch.id}/subject/${subjectSlug}/topics?page=1`;
-  addLog(`🏷️ Topics URL: ${url}`);
-  
-  const res = await apiCall(url);
-  console.log('FULL TOPICS RESPONSE:', res);
-  addLog(`🏷️ Topics response: ${JSON.stringify(res).substring(0, 200)}`);
-  
-  if(res.expired) {
-    g.innerHTML = '<div class="empty"><h3>Session Expired</h3></div>';
+function renderSaved() {
+  const favs = Object.values(JSON.parse(localStorage.getItem('pw_favs') || '{}'));
+  const grid = document.getElementById('savedGrid');
+  if (!favs.length) {
+    grid.innerHTML = '<div class="empty"><h3>No Saved Batches</h3><p>Tap ❤️ on any batch to save it.</p></div>';
     return;
   }
-  
-  if(res.success && Array.isArray(res.data)) {
-    if(res.data.length === 0) {
-      g.innerHTML = '<div class="empty"><h3>No Topics Found</h3></div>';
-      return;
-    }
-    addLog(`✅ Loaded ${res.data.length} topics`, 'success');
-    g.innerHTML = res.data.map((t, i) => `<div class="rc" onclick="openContent('${t._id}','${esc(t.name)}')">
-      <div class="rnum">${String(i+1).padStart(2,'0')}</div>
-      <div class="rtxt"><div class="rnm">${esc(t.name)}</div><div class="rsub">Tap to view content</div></div>
-      <div class="carrow">›</div>
-    </div>`).join('');
+  grid.innerHTML = favs.map(b =>
+    `<div class="cc" onclick="openSubjects('${escHtml(b.id)}','${escHtml(b.name)}')">
+      ${b.img ? `<img class="cimg" src="${escHtml(b.img)}">` : '<div class="cph">📚</div>'}
+      <div class="cbody">
+        <div class="cbody-icon">📘</div>
+        <div class="cbody-info"><div class="cnm">${escHtml(b.name)}</div></div>
+        <div class="carrow">›</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+// ============================================================
+// SUBJECTS
+// ============================================================
+async function openSubjects(batchId, batchName) {
+  S.batch = { id: batchId, name: batchName };
+  document.getElementById('subjTitle').textContent = batchName;
+  showPage('pgSubj');
+  showSkel('subjGrid', 'row', 4);
+
+  // ✅ token param added to subjects URL
+  const url = `https://studyuk.site/pw/app.php?batch_id=${batchId}&token=${S.token}`;
+  log(`Fetching subjects: ${url}`);
+  const res = await api(url);
+
+  const grid = document.getElementById('subjGrid');
+  if (res && res.success && Array.isArray(res.data?.subjects) && res.data.subjects.length) {
+    const icons = ['📗', '📘', '📙', '📕', '📓', '📔'];
+    grid.innerHTML = res.data.subjects.map((s, i) =>
+      `<div class="rc" onclick="openTopics('${escHtml(s.slug)}','${escHtml(s.subject || s.name || 'Subject')}')">
+        <div class="rimgph">${icons[i % icons.length]}</div>
+        <div class="rtxt">
+          <div class="rnm">${escHtml(s.subject || s.name || 'Subject')}</div>
+          <div class="rsub">Tap to view topics</div>
+        </div>
+        <div class="rbadge">PRO</div>
+      </div>`
+    ).join('');
+    log(`Loaded ${res.data.subjects.length} subjects`, 'success');
   } else {
-    addLog(`❌ Topics failed: ${res.message || 'Unknown error'}`, 'error');
-    g.innerHTML = '<div class="empty"><h3>Failed to Load</h3></div>';
+    grid.innerHTML = '<div class="empty"><h3>No Subjects Found</h3><p>This batch may not be available.</p></div>';
+    log(`Subjects failed: ${res?.message}`, 'error');
   }
 }
-// ===== CONTENT =====
+
+// ============================================================
+// TOPICS — api.penpencil.co (routed through proxy)
+// ============================================================
+async function openTopics(slug, subjectName) {
+  S.subject = { slug, name: subjectName };
+  document.getElementById('topicTitle').textContent = subjectName;
+  showPage('pgTopic');
+  showSkel('topicGrid', 'row', 5);
+
+  // ✅ This goes through proxy which forwards Authorization + client-id headers
+  const url = `https://api.penpencil.co/v2/batches/${S.batch.id}/subject/${slug}/topics?page=1`;
+  log(`Fetching topics: ${url}`);
+  const res = await api(url);
+
+  const grid = document.getElementById('topicGrid');
+  if (res && res.success && Array.isArray(res.data) && res.data.length) {
+    grid.innerHTML = res.data.map((t, i) =>
+      `<div class="rc" onclick="openContent('${escHtml(t._id)}','${escHtml(t.name || 'Topic')}')">
+        <div class="rnum">${String(i + 1).padStart(2, '0')}</div>
+        <div class="rtxt">
+          <div class="rnm">${escHtml(t.name || 'Topic')}</div>
+          <div class="rsub">Tap to view content</div>
+        </div>
+        <div class="carrow">›</div>
+      </div>`
+    ).join('');
+    log(`Loaded ${res.data.length} topics`, 'success');
+  } else {
+    grid.innerHTML = `<div class="empty"><h3>No Topics Found</h3><p>${escHtml(res?.message || 'Try a different subject.')}</p></div>`;
+    log(`Topics failed: ${JSON.stringify(res)}`, 'error');
+  }
+}
+
+// ============================================================
+// CONTENT
+// ============================================================
 async function openContent(topicId, topicName) {
-  W.currentTopic = { id: topicId, name: topicName };
-  document.getElementById('ctitle').textContent = topicName;
-  W.currentContentType = 0;
-  show('pgContent');
-  loadContent();
+  S.topic = { id: topicId, name: topicName };
+  S.pdfNotes = null;
+  S.pdfDpp = null;
+  document.getElementById('contentTitle').textContent = topicName;
+  S.contentTab = 0;
+  updateContentTabs();
+  showPage('pgContent');
+  fetchContent();
 }
 
-async function loadContent() {
-  const g = document.getElementById('gcontent');
-  g.innerHTML = '<div class="skel sk-r"></div>';
-  const typeMap = {0:'LECTURES',1:'NOTES',2:'DPP'};
-  const res = await apiCall(`https://studyuk.site/pw/contents.php?batch_id=${W.currentBatch.id}&subject_id=${W.currentSubject.slug}&contentType=${typeMap[W.currentContentType]}&page=1&tag_id=${W.currentTopic.id}`);
-  if(res.success && res.data) {
-    if(W.currentContentType === 0) {
-      g.innerHTML = res.data.map(v => `<div class="vc" onclick="openVideo('${v._id}','${esc(v.title||v.topic)}','${v.scheduleId||v._id}')"><div class="vthph">▶️</div><div class="vnm">${esc(v.title||v.topic)}</div></div>`).join('');
+function switchContentTab(n) {
+  S.contentTab = n;
+  updateContentTabs();
+  fetchContent();
+}
+
+function updateContentTabs() {
+  [0, 1, 2].forEach(i => {
+    document.getElementById(`ctab${i}`)?.classList.toggle('on', i === S.contentTab);
+  });
+}
+
+async function fetchContent() {
+  showSkel('contentGrid', 'row', 4);
+  const typeMap = { 0: 'LECTURES', 1: 'NOTES', 2: 'DPP' };
+  const url = `https://studyuk.site/pw/contents.php?batch_id=${S.batch.id}&subject_id=${S.subject.slug}&contentType=${typeMap[S.contentTab]}&page=1&tag_id=${S.topic.id}`;
+  log(`Fetching content: ${url}`);
+  const res = await api(url);
+
+  const grid = document.getElementById('contentGrid');
+  if (res && res.success && Array.isArray(res.data) && res.data.length) {
+    log(`Loaded ${res.data.length} items`, 'success');
+    if (S.contentTab === 0) {
+      // Videos
+      grid.innerHTML = res.data.map(v => {
+        const title = escHtml(v.title || v.topic || 'Video');
+        const sid = escHtml(v.scheduleId || v._id);
+        const vid = escHtml(v._id);
+        return `<div class="vc" onclick="loadVideo('${vid}','${title}','${sid}')">
+          <div class="vthph">▶️</div>
+          <div class="vtxt">
+            <div class="vnm">${title}</div>
+            <div class="vmeta">Tap to play</div>
+          </div>
+        </div>`;
+      }).join('');
     } else {
-      g.innerHTML = res.data.map(n => `<div class="rc" onclick="openNotesDpp('${n.scheduleId}','${W.currentContentType===1?'notes':'dpp'}','${esc(n.title)}')"><div class="rnum">${W.currentContentType===1?'📄':'📋'}</div><div class="rnm">${esc(n.title)}</div></div>`).join('');
+      // Notes or DPP
+      const icon = S.contentTab === 1 ? '📄' : '📋';
+      grid.innerHTML = res.data.map(n => {
+        const title = escHtml(n.title || n.topic || 'File');
+        const sid = escHtml(n.scheduleId || n._id);
+        const pdfType = S.contentTab === 1 ? 'notes' : 'dpp';
+        return `<div class="rc" onclick="loadPdfDirect('${sid}','${pdfType}','${title}')">
+          <div class="rnum">${icon}</div>
+          <div class="rtxt">
+            <div class="rnm">${title}</div>
+            <div class="rsub">Tap to view</div>
+          </div>
+          <div class="carrow">›</div>
+        </div>`;
+      }).join('');
     }
-  } else g.innerHTML = '<div class="empty"><h3>No Content</h3></div>';
+  } else {
+    grid.innerHTML = '<div class="empty"><h3>No Content</h3><p>Nothing found for this topic.</p></div>';
+    log(`Content failed: ${res?.message}`, 'error');
+  }
 }
 
-function switchContentTab(type) {
-  W.currentContentType = type;
-  document.getElementById('tabVideos').classList.toggle('on', type===0);
-  document.getElementById('tabNotes').classList.toggle('on', type===1);
-  document.getElementById('tabDpp').classList.toggle('on', type===2);
-  loadContent();
+// ============================================================
+// NOTES / DPP DIRECT
+// ============================================================
+async function loadPdfDirect(scheduleId, type, title) {
+  toast('Loading…');
+  const url = `https://studyuk.site/pw/api.php?batch_id=${S.batch.id}&subject_id=${S.subject.slug}&schedule_id=${scheduleId}&token=${S.token}`;
+  log(`Fetching PDF details: ${url}`);
+  const res = await api(url);
+
+  if (res && res.success && res.data) {
+    const d = res.data;
+    if (type === 'notes' && d.classNotes?.length) {
+      openPdfViewer(d.classNotes[0].url, title, 'notes');
+    } else if (type === 'dpp' && d.dpps?.length) {
+      openPdfViewer(d.dpps[0].url, title, 'dpp');
+    } else {
+      toast('PDF not available for this item.');
+      log('PDF data missing in response', 'warn');
+    }
+  } else {
+    toast('Failed to load PDF.');
+    log(`PDF load failed: ${res?.message}`, 'error');
+  }
 }
 
-// ===== NOTES/DPP =====
-async function openNotesDpp(scheduleId, type, title) {
-  const res = await apiCall(`https://studyuk.site/pw/api.php?batch_id=${W.currentBatch.id}&subject_id=${W.currentSubject.slug}&schedule_id=${scheduleId}&token=${W.token}`);
-  if(res.success && res.data) {
-    const data = res.data;
-    if(type==='notes' && data.classNotes?.length) { W.pdfNotes = data.classNotes[0].url; toast('Notes ready!'); }
-    else if(type==='dpp' && data.dpps?.length) { W.pdfDpp = data.dpps[0].url; toast('DPP ready!'); }
-  } else toast('Failed to load', 'er');
+function openPdfViewer(pdfUrl, title, type) {
+  if (!pdfUrl) { toast('PDF not available.'); return; }
+  const viewerUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`;
+  document.getElementById('pdfFrame').src = viewerUrl;
+
+  // Open player page with only PDF panel visible
+  showPage('pgPlayer');
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerTopTitle').textContent = title;
+  document.getElementById('pdfPanel').classList.add('show');
+
+  if (type === 'notes') S.pdfNotes = pdfUrl;
+  else S.pdfDpp = pdfUrl;
+
+  document.getElementById('btnNotes').disabled = !S.pdfNotes;
+  document.getElementById('btnDpp').disabled = !S.pdfDpp;
+
+  const vplayer = document.getElementById('vplayer');
+  vplayer.style.display = 'none';
+  document.querySelector('.player-acts').style.display = 'none';
 }
 
-// ===== VIDEO =====
-async function openVideo(videoId, title, scheduleId) {
-  const res = await apiCall(`https://studyuk.site/pw/api/get-video-url?batch_id=${W.currentBatch.id}&childId=${scheduleId || videoId}`);
-  if(res.success && res.url) { W.currentVideo = { url: res.url, title }; showQModal(title, res.url); }
-  else toast('Failed to load video', 'er');
+// ============================================================
+// VIDEO
+// ============================================================
+async function loadVideo(videoId, title, scheduleId) {
+  toast('Loading video…');
+  const url = `https://studyuk.site/pw/api/get-video-url?batch_id=${S.batch.id}&childId=${scheduleId || videoId}`;
+  log(`Fetching video URL: ${url}`);
+  const res = await api(url);
+
+  if (res && res.success && res.url) {
+    S.video = { url: res.url, title };
+    log(`Video URL: ${res.url}`, 'success');
+    openQualityPicker(title, res.url);
+  } else {
+    toast('Failed to load video.');
+    log(`Video URL failed: ${res?.message}`, 'error');
+  }
 }
 
-function showQModal(title, url) {
-  const ex = document.getElementById('qModal'); if(ex) ex.remove();
-  const m = document.createElement('div'); m.id = 'qModal'; m.className = 'modal-ov';
-  m.innerHTML = `<div class="modal-box"><div class="mhandle"></div><div class="mhead"><div class="mtitle">${esc(title)}</div></div>
-    <div class="mbody"><div class="qbtns">${['240p','360p','480p','720p'].map(q => `<button class="qbtn" data-q="${q}">${q}</button>`).join('')}</div>
-    <button class="mcancel" onclick="this.closest('.modal-ov').remove()">Cancel</button></div></div>`;
-  document.body.appendChild(m);
-  m.querySelectorAll('.qbtn').forEach(b => b.onclick = () => { m.remove(); playVideo(url, b.dataset.q, title); });
+function openQualityPicker(title, url) {
+  if (!S.video && !url) { toast('No video loaded.'); return; }
+  const t = title || S.video?.title || 'Video';
+  const u = url || S.video?.url;
+
+  const existing = document.getElementById('qModal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'qModal';
+  modal.className = 'modal-ov';
+  modal.innerHTML = `
+    <div class="modal-box">
+      <div class="mhandle"></div>
+      <div class="mhead">
+        <div class="mtitle">Select Quality</div>
+        <div class="msub">${escHtml(t)}</div>
+      </div>
+      <div class="mbody">
+        <div class="qbtns">
+          ${['240p', '360p', '480p', '720p'].map(q =>
+            `<button class="qbtn" onclick="playVideo('${escHtml(u)}','${q}','${escHtml(t)}');document.getElementById('qModal').remove()">${q}</button>`
+          ).join('')}
+        </div>
+        <button class="mcancel" onclick="document.getElementById('qModal').remove()">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
 }
 
-function playVideo(url, quality, title) {
-  show('pgPlayer');
-  document.getElementById('ptbar').textContent = title;
-  document.getElementById('ptitle').textContent = title;
-  document.getElementById('pbNotes').disabled = !W.pdfNotes;
-  document.getElementById('pbDpp').disabled = !W.pdfDpp;
-  const v = document.getElementById('vplayer');
-  if(hls) { hls.destroy(); hls = null; }
-  v.pause(); v.src = '';
-  const stream = url.replace('master.mpd', `hls/${quality}/main.m3u8`);
-  if(Hls.isSupported()) {
-    hls = new Hls({ enableWorker: true });
-    hls.loadSource(stream);
-    hls.attachMedia(v);
-    hls.on(Hls.Events.MANIFEST_PARSED, () => v.play().catch(()=>{}));
-  } else { v.src = stream; v.play().catch(()=>{}); }
+function playVideo(masterUrl, quality, title) {
+  // ✅ Replace master.mpd with hls/{quality}/main.m3u8
+  const hlsUrl = masterUrl.replace('master.mpd', `hls/${quality}/main.m3u8`);
+  log(`Playing: ${hlsUrl} [${quality}]`);
+
+  showPage('pgPlayer');
+  const vplayer = document.getElementById('vplayer');
+  vplayer.style.display = 'block';
+  document.querySelector('.player-acts').style.display = 'flex';
+  document.getElementById('pdfPanel').classList.remove('show');
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerTopTitle').textContent = title;
+  document.getElementById('btnNotes').disabled = !S.pdfNotes;
+  document.getElementById('btnDpp').disabled = !S.pdfDpp;
+
+  // Destroy existing HLS
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  vplayer.pause();
+  vplayer.removeAttribute('src');
+  vplayer.load();
+
+  // Route HLS through proxy for CORS + key handling
+  const proxiedUrl = `/api/proxy?url=${encodeURIComponent(hlsUrl)}`;
+
+  if (Hls.isSupported()) {
+    hlsInstance = new Hls({
+      enableWorker: true,
+      // Proxy loader for encrypted HLS segments
+      xhrSetup: (xhr, url) => {
+        log(`HLS XHR: ${url.slice(0, 80)}`, 'info');
+      },
+    });
+    hlsInstance.loadSource(proxiedUrl);
+    hlsInstance.attachMedia(vplayer);
+    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      log('HLS manifest parsed, playing…', 'success');
+      vplayer.play().catch(e => log(`Play error: ${e.message}`, 'warn'));
+    });
+    hlsInstance.on(Hls.Events.ERROR, (evt, data) => {
+      log(`HLS error: ${data.type} / ${data.details}`, 'error');
+      if (data.fatal) {
+        toast('Video error. Try another quality.');
+      }
+    });
+  } else if (vplayer.canPlayType('application/vnd.apple.mpegurl')) {
+    // Native HLS (Safari/iOS)
+    vplayer.src = proxiedUrl;
+    vplayer.play().catch(e => log(`Play error: ${e.message}`, 'warn'));
+  } else {
+    toast('HLS not supported on this device.');
+    log('HLS not supported', 'error');
+  }
 }
 
-function showQPicker() { if(W.currentVideo) showQModal(W.currentVideo.title, W.currentVideo.url); }
+function closePlayer() {
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  const vplayer = document.getElementById('vplayer');
+  vplayer.pause();
+  vplayer.removeAttribute('src');
+  vplayer.load();
+  showPage('pgContent');
+}
+
+// ============================================================
+// PDF PANEL
+// ============================================================
 function openPdf(type) {
-  const url = type==='notes' ? W.pdfNotes : W.pdfDpp;
-  if(!url) { toast('Not available'); return; }
-  document.getElementById('pdfPanel').classList.remove('hidden');
+  const url = type === 'notes' ? S.pdfNotes : S.pdfDpp;
+  if (!url) { toast('Not available for this video.'); return; }
+  document.getElementById('pdfPanel').classList.add('show');
   switchPdfTab(type);
 }
-function switchPdfTab(type) {
-  document.getElementById('pdfTabNotes').classList.toggle('on', type==='notes');
-  document.getElementById('pdfTabDpp').classList.toggle('on', type==='dpp');
-  const url = type==='notes' ? W.pdfNotes : W.pdfDpp;
-  if(url) document.getElementById('pdfFrame').src = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}`;
-}
-function closePdfPanel() { document.getElementById('pdfPanel').classList.add('hidden'); }
 
-// ===== LIVE =====
-async function goLive() {
-  if(!W.currentBatch) { toast('Select a batch first'); return; }
-  show('pgLive');
-  const g = document.getElementById('gl');
-  g.innerHTML = '<div class="skel sk-r"></div>';
-  
-  const res = await apiCall(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${W.currentBatch.id}&token=${W.token}`);
-  
-  if(res.success && res.data) {
-    g.innerHTML = res.data.map(s => `<div class="cc" onclick="playLive('${s._id}','${esc(s.topic)}')">
-      <div class="cph">${s.tag==='Live'?'🔴':'⏰'}</div>
-      <div class="cbody"><div><div class="cnm">${esc(s.topic)}</div><div class="cmeta">${s.tag} • ${esc(s.startTime||'')}</div></div><div class="carrow">▶</div></div>
-    </div>`).join('');
-  } else {
-    g.innerHTML = '<div class="empty"><h3>No Live Classes</h3></div>';
+function switchPdfTab(type) {
+  document.getElementById('pdfTabNotes').classList.toggle('on', type === 'notes');
+  document.getElementById('pdfTabDpp').classList.toggle('on', type === 'dpp');
+  const url = type === 'notes' ? S.pdfNotes : S.pdfDpp;
+  if (url) {
+    document.getElementById('pdfFrame').src = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}`;
   }
 }
-// ===== NAVIGATION =====
-function show(id) {
-  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
-  const t = document.getElementById(id);
-  if(t) { t.style.display = 'flex'; t.classList.add('active'); }
-}
-function back(to) { show(to); }
-function closePlayer() {
-  if(hls) { hls.destroy(); hls = null; }
-  document.getElementById('vplayer').pause();
-  closePdfPanel();
-  back('pgContent');
-}
-function swtab(n) {
-  W.tab = n;
-  ['bn0','bn1','bn2','bn3'].forEach((id,i) => document.getElementById(id)?.classList.toggle('on', i===n));
-  ['t0','t1','t2','t3'].forEach((id,i) => { const e = document.getElementById(id); if(e) e.style.display = i===n ? 'block' : 'none'; });
-  if(n===2) loadFavs();
-}
-function logout() {
-  localStorage.clear();
-  W.token = null; W.user = null;
-  show('pgLogin');
-  toast('Logged out');
-  document.getElementById('sheetOv').style.display = 'none';
-}
-function gotoSheet() { document.getElementById('sheetOv').style.display = 'flex'; }
-function closeSheet(e) { if(e.target === document.getElementById('sheetOv')) document.getElementById('sheetOv').style.display = 'none'; }
 
-// ===== INIT =====
-window.onload = () => {
-  addLog('🚀 PW Player Ready', 'success');
-  if(CONFIG.maintenance) { document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh"><h1>🔧 Maintenance</h1></div>'; return; }
-  if(W.token) { goHome(); } else { show('pgLogin'); }
-};
+function closePdfPanel() {
+  document.getElementById('pdfPanel').classList.remove('show');
+}
+
+// ============================================================
+// LIVE CLASSES
+// ============================================================
+async function goLive() {
+  if (!S.batch) { toast('Select a batch first.'); return; }
+  showPage('pgLive');
+  showSkel('liveGrid', 'row', 3);
+
+  // ✅ token param added to live URL
+  const url = `https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${S.batch.id}&token=${S.token}`;
+  log(`Fetching live schedule: ${url}`);
+  const res = await api(url);
+
+  const grid = document.getElementById('liveGrid');
+  if (res && res.success && Array.isArray(res.data) && res.data.length) {
+    grid.innerHTML = res.data.map(s => {
+      const tag = (s.tag || 'upcoming').toLowerCase();
+      const icon = tag === 'live' ? '🔴' : tag === 'ended' ? '⬛' : '🟡';
+      return `<div class="cc" onclick="playLiveClass('${escHtml(s._id)}','${escHtml(s.topic || 'Live Class')}')">
+        <div class="cph">${icon}</div>
+        <div class="cbody">
+          <div class="cbody-info">
+            <div class="cnm">${escHtml(s.topic || 'Live Class')}</div>
+            <div class="cmeta" style="display:flex;align-items:center;gap:6px">
+              <span class="live-tag ${tag}">${escHtml(s.tag || 'Upcoming')}</span>
+              ${s.startTime ? `• ${escHtml(s.startTime)}` : ''}
+            </div>
+          </div>
+          <div class="carrow">▶</div>
+        </div>
+      </div>`;
+    }).join('');
+    log(`Loaded ${res.data.length} live classes`, 'success');
+  } else {
+    grid.innerHTML = '<div class="empty"><h3>No Live Classes Today</h3><p>Check back later.</p></div>';
+    log(`Live schedule: ${res?.message}`, 'warn');
+  }
+}
+
+async function playLiveClass(id, title) {
+  toast('Loading live class…');
+  const url = `https://studyuk.site/pw/api/get-video-url?batch_id=${S.batch.id}&childId=${id}`;
+  const res = await api(url);
+  if (res && res.success && res.url) {
+    S.video = { url: res.url, title };
+    openQualityPicker(title, res.url);
+  } else {
+    toast('Live class not available yet.');
+    log(`Live stream failed: ${res?.message}`, 'error');
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  log('PW Player v2.0 initialized', 'success');
+
+  if (CFG.maintenance) {
+    document.body.innerHTML = `
+      <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center">
+        <div style="font-size:48px">🔧</div>
+        <h2>Under Maintenance</h2>
+        <p style="color:var(--mut2)">We'll be back shortly. Stay tuned on Telegram.</p>
+        <a href="https://t.me/CODEXUPDATEZ" style="padding:12px 24px;background:var(--acc);color:#fff;border-radius:12px;text-decoration:none;font-weight:700">@CODEXUPDATEZ</a>
+      </div>`;
+    return;
+  }
+
+  if (S.token) {
+    goHome();
+  } else {
+    showPage('pgLogin');
+  }
+});
 </script>
 </body>
 </html>
