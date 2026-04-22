@@ -1,4 +1,17 @@
+/**
+ * Vercel Serverless Proxy — PW Web Player
+ * @CODEXMOMO | t.me/CODEXUPDATEZ | github.com/codexmomoo
+ *
+ * Handles:
+ *  - CORS for all external PW/penpencil domains
+ *  - Authorization + client-id header forwarding
+ *  - M3U8 segment URL rewriting for HLS playback
+ *  - Binary passthrough for .ts / .m4s / .mp4 segments
+ *  - EXT-X-KEY URI rewriting for encrypted HLS
+ */
+
 export default async function handler(req, res) {
+  // ── CORS headers ────────────────────────────────────────────
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', '*');
@@ -8,105 +21,170 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  // ── Extract target URL ───────────────────────────────────────
   const { url } = req.query;
-  if (!url) return res.status(400).json({ error: 'url parameter required' });
+  if (!url) {
+    return res.status(400).json({ error: 'url parameter required' });
+  }
 
   let targetUrl;
   try {
     targetUrl = decodeURIComponent(url);
+    new URL(targetUrl); // validate
   } catch {
     return res.status(400).json({ error: 'Invalid URL' });
   }
 
-  // ✅ ALLOWED DOMAINS (ADDED api.penpencil.co)
-  const allowedDomains = [
+  // ── Domain allowlist ─────────────────────────────────────────
+  const ALLOWED = [
     'studyuk.site',
     'api.penpencil.co',
     'videos.penpencil.co',
     'd1d34p8vz63oiq.cloudfront.net',
     'pw.live',
     'akamaized.net',
-    'cloudfront.net'
+    'cloudfront.net',
   ];
 
-  const urlObj = new URL(targetUrl);
-  const isAllowed = allowedDomains.some(d => urlObj.hostname.includes(d));
-  if (!isAllowed) {
-    return res.status(403).json({ error: 'Domain not allowed' });
+  const hostname = new URL(targetUrl).hostname;
+  const allowed = ALLOWED.some(d => hostname === d || hostname.endsWith('.' + d));
+  if (!allowed) {
+    return res.status(403).json({ error: `Domain not allowed: ${hostname}` });
   }
 
+  // ── Build upstream headers ───────────────────────────────────
+  const isPenpencil = hostname.includes('penpencil.co');
+
+  const upstreamHeaders = {
+    'Accept': '*/*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    // client-id required by penpencil API
+    'client-id': '5eb393ee95fab7468a79d189',
+    // user-agent must be "Android" for penpencil endpoints
+    'user-agent': 'Android',
+    'Connection': 'keep-alive',
+  };
+
+  // ✅ Forward Authorization token (Bearer) — critical for api.penpencil.co
+  if (req.headers['authorization']) {
+    upstreamHeaders['Authorization'] = req.headers['authorization'];
+  }
+
+  // ✅ Forward Content-Type for POST bodies
+  if (req.headers['content-type']) {
+    upstreamHeaders['Content-Type'] = req.headers['content-type'];
+  }
+
+  // Origin/Referer — match domain to avoid CORS rejection by upstream
+  if (isPenpencil) {
+    upstreamHeaders['Origin'] = 'https://www.pw.live';
+    upstreamHeaders['Referer'] = 'https://www.pw.live/';
+  } else {
+    upstreamHeaders['Origin'] = 'https://studyuk.site';
+    upstreamHeaders['Referer'] = 'https://studyuk.site/';
+  }
+
+  // ── Build request body ───────────────────────────────────────
+  let body = undefined;
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    if (req.body) {
+      body = typeof req.body === 'string'
+        ? req.body
+        : JSON.stringify(req.body);
+    }
+  }
+
+  // ── Fetch upstream ───────────────────────────────────────────
+  let response;
   try {
-    // ✅ MOD APK STYLE HEADERS
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
-      'client-id': '5eb393ee95fab7468a79d189',
-      'Accept': '*/*',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'Origin': targetUrl.startsWith('https://api.penpencil.co') ? 'https://api.penpencil.co' : 'https://studyuk.site',
-      'Referer': targetUrl.startsWith('https://api.penpencil.co') ? 'https://api.penpencil.co/' : 'https://studyuk.site/',
-      'Connection': 'keep-alive',
-      'Sec-Fetch-Mode': 'cors',
-      'Sec-Fetch-Site': 'cross-site'
-    };
-
-    // ✅ TOKEN PASS KARO (AGAR REQUEST MEIN HAI TOH)
-    if (req.headers.authorization) {
-      headers['Authorization'] = req.headers.authorization;
-    }
-
-    // ✅ BODY HANDLING (POST/PUT KE LIYE)
-    let body = undefined;
-    if (req.method !== 'GET' && req.body) {
-      body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
-      headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(targetUrl, {
+    response = await fetch(targetUrl, {
       method: req.method,
-      headers,
-      body
+      headers: upstreamHeaders,
+      body,
+      redirect: 'follow',
+    });
+  } catch (err) {
+    console.error('[proxy] Fetch error:', err.message);
+    return res.status(502).json({ error: `Upstream fetch failed: ${err.message}` });
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+
+  // ── M3U8 / HLS playlist handling ────────────────────────────
+  const isM3u8 = targetUrl.includes('.m3u8') || contentType.includes('mpegurl');
+  if (isM3u8) {
+    let text;
+    try {
+      text = await response.text();
+    } catch (err) {
+      return res.status(502).json({ error: `M3U8 read error: ${err.message}` });
+    }
+
+    // Base URL for resolving relative paths
+    const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
+    const proxyPrefix = '/api/proxy?url=';
+
+    // ✅ Rewrite every non-comment line (segment/playlist URLs)
+    text = text.replace(/^(?!#)([^\r\n]+)$/gm, (line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return line;
+      const absoluteUrl = trimmed.startsWith('http')
+        ? trimmed
+        : baseUrl + trimmed;
+      return proxyPrefix + encodeURIComponent(absoluteUrl);
     });
 
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
+    // ✅ Rewrite EXT-X-KEY URI (encryption keys)
+    text = text.replace(/URI="([^"]+)"/g, (match, uri) => {
+      const absoluteUri = uri.startsWith('http') ? uri : baseUrl + uri;
+      return `URI="${proxyPrefix + encodeURIComponent(absoluteUri)}"`;
+    });
 
-    // ✅ M3U8 REWRITE (HLS STREAM KE LIYE)
-    if (targetUrl.includes('.m3u8') || contentType.includes('mpegurl')) {
-      let text = await response.text();
-      const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
-      const proxyBase = '/api/proxy?url=';
-      const cleanBaseUrl = baseUrl.split('?')[0];
+    // ✅ Rewrite EXT-X-MAP URI (init segments)
+    text = text.replace(/EXT-X-MAP:URI="([^"]+)"/g, (match, uri) => {
+      const absoluteUri = uri.startsWith('http') ? uri : baseUrl + uri;
+      return `EXT-X-MAP:URI="${proxyPrefix + encodeURIComponent(absoluteUri)}"`;
+    });
 
-      text = text.replace(/^(?!#)([^\r\n]+)$/gm, (line) => {
-        line = line.trim();
-        if (!line || line.startsWith('#')) return line;
-        let segmentUrl = line.startsWith('http') ? line : cleanBaseUrl + line;
-        return proxyBase + encodeURIComponent(segmentUrl + (segmentUrl.includes('?')?'&':'?') + '_cb=' + Date.now());
-      });
-
-      text = text.replace(/URI="([^"]+)"/g, (match, uri) => {
-        let keyUrl = uri.startsWith('http') ? uri : cleanBaseUrl + uri;
-        return `URI="${proxyBase + encodeURIComponent(keyUrl)}"`;
-      });
-
-      res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-      res.setHeader('Cache-Control', 'no-cache, no-store');
-      return res.status(200).send(text);
-    }
-
-    // ✅ VIDEO SEGMENTS
-    let finalContentType = contentType;
-    if (targetUrl.includes('.ts')) finalContentType = 'video/mp2t';
-    else if (targetUrl.includes('.m4s')) finalContentType = 'video/iso.segment';
-    else if (targetUrl.includes('.mp4')) finalContentType = 'video/mp4';
-
-    res.setHeader('Content-Type', finalContentType);
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    
-    const buffer = await response.arrayBuffer();
-    return res.status(200).send(Buffer.from(buffer));
-
-  } catch (error) {
-    console.error('Proxy error:', error);
-    return res.status(500).json({ error: error.message });
+    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(response.status).send(text);
   }
+
+  // ── Binary segments passthrough ──────────────────────────────
+  let finalContentType = contentType;
+  if (targetUrl.includes('.ts'))  finalContentType = 'video/mp2t';
+  else if (targetUrl.includes('.m4s')) finalContentType = 'video/iso.segment';
+  else if (targetUrl.includes('.mp4')) finalContentType = 'video/mp4';
+  else if (targetUrl.includes('.key')) finalContentType = 'application/octet-stream';
+
+  // ── JSON response passthrough ────────────────────────────────
+  const isJson = contentType.includes('application/json') || finalContentType.includes('application/json');
+  if (isJson) {
+    let json;
+    try {
+      json = await response.json();
+    } catch {
+      const txt = await response.text();
+      return res.status(response.status).send(txt);
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(response.status).json(json);
+  }
+
+  // ── Default: binary passthrough ──────────────────────────────
+  let buffer;
+  try {
+    buffer = await response.arrayBuffer();
+  } catch (err) {
+    return res.status(502).json({ error: `Buffer read error: ${err.message}` });
+  }
+
+  res.setHeader('Content-Type', finalContentType || 'application/octet-stream');
+  res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  return res.status(response.status).send(Buffer.from(buffer));
 }
