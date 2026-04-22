@@ -167,6 +167,21 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .qbtn:active{background:var(--acc);border-color:var(--acc);color:#fff}
 .mcancel{width:100%;margin-top:8px;padding:13px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;color:var(--mut2);font-size:13px;cursor:pointer;font-weight:600}
 
+/* DEBUG CONSOLE */
+.debug-console{position:fixed;bottom:80px;left:10px;right:10px;background:#0a0a0f;border:1px solid var(--bdr2);border-radius:16px;z-index:1000;max-height:300px;display:flex;flex-direction:column;box-shadow:0 -4px 20px rgba(0,0,0,0.5)}
+.debug-header{padding:10px 14px;background:var(--surf);border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)}
+.debug-header span{font-weight:700;font-size:12px;color:var(--acc2);display:flex;align-items:center;gap:6px}
+.debug-header button{background:var(--card);border:1px solid var(--bdr2);color:var(--txt);padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600}
+.debug-header button:active{background:var(--acc)}
+.debug-content{overflow-y:auto;padding:10px 14px;font-size:11px;font-family:monospace;max-height:250px;color:#a0a0b0}
+.debug-content .log-entry{margin-bottom:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);word-break:break-all}
+.debug-content .log-entry.info{color:#8ab4f8}
+.debug-content .log-entry.success{color:#4ade80}
+.debug-content .log-entry.error{color:#f87171}
+.debug-content .log-entry.warn{color:#fbbf24}
+.debug-toggle{position:fixed;bottom:90px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--acc);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:1001;box-shadow:0 4px 16px rgba(124,109,240,.4);display:flex;align-items:center;justify-content:center;font-weight:700}
+.debug-badge{position:absolute;top:-4px;right:-4px;background:var(--err);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:700}
+
 /* NOTICE */
 .notice-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
 .notice-box{background:var(--surf);border:1px solid var(--bdr2);border-radius:22px;width:100%;max-width:360px;animation:popIn .35s ease}
@@ -217,6 +232,22 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 </style>
 </head>
 <body>
+
+<!-- DEBUG CONSOLE TOGGLE -->
+<button class="debug-toggle" id="debugToggle" onclick="toggleDebugConsole()">🐛</button>
+
+<!-- DEBUG CONSOLE PANEL -->
+<div class="debug-console" id="debugConsole" style="display:none">
+  <div class="debug-header">
+    <span>🔧 Debug Console <span id="logCount">(0)</span></span>
+    <div style="display:flex;gap:6px">
+      <button onclick="copyLogs()">📋 Copy</button>
+      <button onclick="clearLogs()">🗑️ Clear</button>
+      <button onclick="toggleDebugConsole()">✕</button>
+    </div>
+  </div>
+  <div class="debug-content" id="debugContent"></div>
+</div>
 
 <!-- NOTICE DIALOG -->
 <div class="notice-ov" id="noticeOverlay">
@@ -495,6 +526,66 @@ const CONFIG = {
   noticeDismissable: true,
 };
 
+// ===== DEBUG LOGGER =====
+const debugLogs = [];
+let errorCount = 0;
+
+function addLog(message, type = 'info') {
+  const entry = { message, type, time: new Date().toLocaleTimeString() };
+  debugLogs.push(entry);
+  if (type === 'error') errorCount++;
+  
+  console.log(`[${type.toUpperCase()}]`, message);
+  
+  const content = document.getElementById('debugContent');
+  const badge = document.querySelector('.debug-badge');
+  const countSpan = document.getElementById('logCount');
+  
+  if (content) {
+    const div = document.createElement('div');
+    div.className = `log-entry ${type}`;
+    div.innerHTML = `<span style="color:#666;margin-right:8px">${entry.time}</span> ${message}`;
+    content.appendChild(div);
+    content.scrollTop = content.scrollHeight;
+  }
+  
+  if (countSpan) countSpan.textContent = `(${debugLogs.length})`;
+  if (badge) {
+    badge.textContent = errorCount || '';
+    badge.style.display = errorCount ? 'block' : 'none';
+  }
+}
+
+function toggleDebugConsole() {
+  const el = document.getElementById('debugConsole');
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+}
+
+function copyLogs() {
+  const text = debugLogs.map(l => `[${l.time}] [${l.type}] ${l.message}`).join('\n');
+  navigator.clipboard?.writeText(text).then(() => toast('Logs copied!', 'ok'));
+  addLog('📋 Logs copied to clipboard', 'info');
+}
+
+function clearLogs() {
+  debugLogs.length = 0;
+  errorCount = 0;
+  document.getElementById('debugContent').innerHTML = '';
+  document.getElementById('logCount').textContent = '(0)';
+  const badge = document.querySelector('.debug-badge');
+  if (badge) badge.style.display = 'none';
+  addLog('🗑️ Logs cleared', 'info');
+}
+
+// Override console methods
+const originalLog = console.log;
+const originalError = console.error;
+const originalWarn = console.warn;
+
+console.log = function(...args) { originalLog.apply(console, args); addLog(args.join(' '), 'info'); };
+console.error = function(...args) { originalError.apply(console, args); addLog(args.join(' '), 'error'); };
+console.warn = function(...args) { originalWarn.apply(console, args); addLog(args.join(' '), 'warn'); };
+
 // ===== STATE =====
 const W = {
   token: localStorage.getItem('pw_token') || null,
@@ -529,29 +620,37 @@ function toast(msg, type='') {
 
 // ===== API CALLS =====
 async function apiCall(url, options = {}) {
+  addLog(`🌐 API Call: ${options.method || 'GET'} ${url}`, 'info');
+  
   try {
     const headers = { ...options.headers };
     if (W.token) headers['Authorization'] = `Bearer ${W.token}`;
     headers['client-id'] = '5eb393ee95fab7468a79d189';
-    headers['Content-Type'] = 'application/json';
+    if (options.method === 'POST') headers['Content-Type'] = 'application/json';
     
     let finalUrl = url;
     if (url.includes('studyuk.site') || url.includes('api.penpencil.co')) {
       finalUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+      addLog(`🔄 Proxied: ${finalUrl}`, 'info');
     }
     
-    const fetchOptions = { 
-      method: options.method || 'GET',
-      headers: options.method === 'GET' ? {} : headers
-    };
-    
+    const fetchOptions = { method: options.method || 'GET', headers };
     if (options.body) fetchOptions.body = JSON.stringify(options.body);
     
     const res = await fetch(finalUrl, fetchOptions);
     const text = await res.text();
-    try { return JSON.parse(text); }
-    catch { return { success: false, message: text }; }
+    
+    try { 
+      const json = JSON.parse(text);
+      addLog(`✅ Response: ${JSON.stringify(json).substring(0, 200)}...`, json.success ? 'success' : 'warn');
+      return json;
+    }
+    catch { 
+      addLog(`⚠️ Invalid JSON: ${text.substring(0, 100)}`, 'warn');
+      return { success: false, message: text }; 
+    }
   } catch(e) {
+    addLog(`❌ API Error: ${e.message}`, 'error');
     return { success: false, message: e.message };
   }
 }
@@ -561,9 +660,12 @@ let otpCooldown = 0;
 
 async function sendOTP() {
   const mobile = document.getElementById('mobileInput').value.trim();
+  addLog(`📱 Sending OTP to: ${mobile}`, 'info');
+  
   if (mobile.length !== 10) {
     document.getElementById('loginError').classList.add('on');
     document.getElementById('loginError').textContent = 'Please enter a valid 10-digit mobile number';
+    addLog('❌ Invalid mobile number', 'error');
     return;
   }
   
@@ -578,6 +680,7 @@ async function sendOTP() {
   
   if (res.success) {
     toast('OTP sent successfully!', 'ok');
+    addLog('✅ OTP sent successfully', 'success');
     otpCooldown = 30;
     const timer = setInterval(() => {
       otpCooldown--;
@@ -591,6 +694,7 @@ async function sendOTP() {
   } else {
     document.getElementById('loginError').classList.add('on');
     document.getElementById('loginError').textContent = res.message || 'Failed to send OTP';
+    addLog(`❌ OTP failed: ${res.message}`, 'error');
     btn.disabled = false;
     btn.textContent = 'Send OTP';
   }
@@ -599,6 +703,7 @@ async function sendOTP() {
 async function verifyOTP() {
   const mobile = document.getElementById('mobileInput').value.trim();
   const otp = document.getElementById('otpInput').value.trim();
+  addLog(`🔐 Verifying OTP for: ${mobile}`, 'info');
   
   if (mobile.length !== 10 || otp.length !== 6) {
     document.getElementById('loginError').classList.add('on');
@@ -623,10 +728,12 @@ async function verifyOTP() {
     localStorage.setItem('pw_token', W.token);
     localStorage.setItem('pw_user', JSON.stringify(W.user));
     localStorage.setItem('pw_mobile', mobile);
+    addLog('✅ Login successful!', 'success');
     showSetup();
   } else {
     document.getElementById('loginError').classList.add('on');
     document.getElementById('loginError').textContent = res.message || 'Invalid OTP';
+    addLog(`❌ Verify failed: ${res.message}`, 'error');
     btn.disabled = false;
     btnText.textContent = 'Verify & Login';
   }
@@ -648,6 +755,7 @@ function goHome() {
   swtab(0);
   loadBatches(true);
   loadProf();
+  addLog('🏠 Home loaded', 'info');
 }
 
 function loadProf() {
@@ -665,14 +773,17 @@ async function loadBatches(reset) {
   if (reset) g.innerHTML = '<div class="skel sk-c"></div><div class="skel sk-c"></div>';
   
   W.batchPage++;
+  addLog(`📚 Loading batches page ${W.batchPage}`, 'info');
   const res = await apiCall(`https://studyuk.site/pw/api.php?page=${W.batchPage}`);
   
   if (res.success && res.batches) {
     if (reset) W.batches = res.batches;
     else W.batches = [...W.batches, ...res.batches];
     W.hasMore = res.batches.length >= 10;
+    addLog(`✅ Loaded ${res.batches.length} batches`, 'success');
     renderBatches();
   } else {
+    addLog('❌ Failed to load batches', 'error');
     if (reset) g.innerHTML = '<div class="empty"><h3>No Batches</h3></div>';
   }
   updateLoadMore();
@@ -730,34 +841,25 @@ async function openSubjects(batchId, batchName) {
   W.currentBatch = { id: batchId, name: batchName };
   document.getElementById('stitle').textContent = batchName;
   show('pgSubj');
+  addLog(`📖 Opening subjects for batch: ${batchId}`, 'info');
   
   const g = document.getElementById('gs');
   g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
   
-  try {
-    const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}`);
-    console.log('Subjects API Response:', res);
-    
-    if (res.success && res.data && res.data.subjects) {
-      const subjects = res.data.subjects;
-      if (subjects.length === 0) {
-        g.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No Subjects Found</h3><p>This batch may not have subjects yet.</p></div>';
-        return;
-      }
-      
-      g.innerHTML = subjects.map((s, i) => `<div class="rc" onclick="openTopics('${s.slug || s._id}','${esc(s.subject || s.name)}')">
-        <div class="rimgph">${['📗','📘','📙','📕'][i%4]}</div>
-        <div class="rtxt"><div class="rnm">${esc(s.subject || s.name)}</div><div class="rsub">Tap to view topics</div></div>
-        <div class="rpro">PRO</div>
-      </div>`).join('');
-    } else {
-      console.error('Unexpected response format:', res);
-      g.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to Load</h3><p>Check console for details.</p></div>';
-    }
-  } catch(e) {
-    console.error('Subjects error:', e);
-    g.innerHTML = '<div class="empty"><div class="empty-icon">❌</div><h3>Error</h3><p>Tap to retry</p></div>';
-    g.onclick = () => openSubjects(batchId, batchName);
+  const res = await apiCall(`https://studyuk.site/pw/app.php?batch_id=${batchId}`);
+  addLog(`📖 Subjects response: ${JSON.stringify(res).substring(0, 200)}`, 'info');
+  
+  if (res.success && res.data?.subjects) {
+    const subjects = res.data.subjects;
+    addLog(`✅ Loaded ${subjects.length} subjects`, 'success');
+    g.innerHTML = subjects.map((s, i) => `<div class="rc" onclick="openTopics('${s.slug}','${esc(s.subject)}')">
+      <div class="rimgph">${['📗','📘','📙','📕'][i%4]}</div>
+      <div class="rtxt"><div class="rnm">${esc(s.subject)}</div><div class="rsub">Tap to view topics</div></div>
+      <div class="rpro">PRO</div>
+    </div>`).join('');
+  } else {
+    addLog('❌ No subjects found or invalid response', 'error');
+    g.innerHTML = '<div class="empty"><h3>No Subjects</h3></div>';
   }
 }
 
@@ -766,25 +868,31 @@ async function openTopics(subjectSlug, subjectName) {
   W.currentSubject = { slug: subjectSlug, name: subjectName };
   document.getElementById('ttitle').textContent = subjectName;
   show('pgTopic');
+  addLog(`🏷️ Opening topics for subject: ${subjectSlug}`, 'info');
   
   const g = document.getElementById('gt');
   g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
   
   const url = `https://api.penpencil.co/v2/batches/${W.currentBatch.id}/subject/${subjectSlug}/topics?page=1`;
+  addLog(`🏷️ Topics URL: ${url}`, 'info');
+  
   const res = await apiCall(url);
+  addLog(`🏷️ Topics response: ${JSON.stringify(res).substring(0, 200)}`, 'info');
   
   if (res.success && Array.isArray(res.data)) {
     if (res.data.length === 0) {
+      addLog('⚠️ No topics found (empty array)', 'warn');
       g.innerHTML = '<div class="empty"><div class="empty-icon">📚</div><h3>No Topics Found</h3></div>';
       return;
     }
-    
+    addLog(`✅ Loaded ${res.data.length} topics`, 'success');
     g.innerHTML = res.data.map((t, i) => `<div class="rc" onclick="openContent('${t._id}','${esc(t.name)}')">
       <div class="rnum">${String(i+1).padStart(2,'0')}</div>
       <div class="rtxt"><div class="rnm">${esc(t.name)}</div><div class="rsub">Tap to view content</div></div>
       <div class="carrow">›</div>
     </div>`).join('');
   } else {
+    addLog('❌ Failed to load topics', 'error');
     g.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to Load</h3></div>';
   }
 }
@@ -841,10 +949,10 @@ async function openNotesDpp(scheduleId, type, title) {
     const data = res.data;
     if (type === 'notes' && data.classNotes?.length) {
       W.pdfNotes = data.classNotes[0].url;
-      toast('Notes ready! Open from player', 'ok');
+      toast('Notes ready!', 'ok');
     } else if (type === 'dpp' && data.dpps?.length) {
       W.pdfDpp = data.dpps[0].url;
-      toast('DPP ready! Open from player', 'ok');
+      toast('DPP ready!', 'ok');
     }
   } else {
     toast('Failed to load', 'er');
@@ -916,57 +1024,30 @@ function closePdfPanel() { document.getElementById('pdfPanel').classList.add('hi
 function toggleFavVideo() { toast('Favorite toggled', 'ok'); }
 
 // ===== LIVE =====
-// ===== LIVE =====
 async function goLive() {
   if (!W.currentBatch) { toast('Select a batch first', 'er'); return; }
   show('pgLive');
   const g = document.getElementById('gl');
   g.innerHTML = '<div class="skel sk-r"></div><div class="skel sk-r"></div>';
   
-  try {
-    const res = await apiCall(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${W.currentBatch.id}`);
-    console.log('Live API Response:', res);
-    
-    if (res.success && res.data) {
-      if (res.data.length === 0) {
-        g.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><h3>No Live Classes</h3><p>Check back later!</p></div>';
-        return;
-      }
-      
-      g.innerHTML = res.data.map(s => {
-        const isLive = s.tag === 'Live';
-        return `<div class="cc" onclick="playLive('${s._id}','${esc(s.topic)}','${s.tag}')">
-          <div class="cph" style="font-size:32px">${isLive ? '🔴' : '⏰'}</div>
-          <div class="cbody">
-            <div style="flex:1">
-              <div class="cnm">${esc(s.topic)}</div>
-              <div class="cmeta" style="color:${isLive ? '#ff6b35' : 'var(--mut)'}">
-                ${s.tag} • ${esc(s.startTime || 'Scheduled')}
-              </div>
-            </div>
-            <div class="carrow">▶</div>
-          </div>
-        </div>`;
-      }).join('');
-    } else {
-      console.error('Unexpected live response:', res);
-      g.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>No Live Classes</h3><p>Try again later.</p></div>';
-    }
-  } catch(e) {
-    console.error('Live error:', e);
-    g.innerHTML = '<div class="empty"><div class="empty-icon">❌</div><h3>Error</h3><p>Tap to retry</p></div>';
-    g.onclick = () => goLive();
+  const res = await apiCall(`https://studyuk.site/pw/app.php?endpoint=todays-schedule&batch_id=${W.currentBatch.id}`);
+  if (res.success && res.data) {
+    g.innerHTML = res.data.map(s => `<div class="cc" onclick="playLive('${s._id}','${esc(s.topic)}','${s.tag}')">
+      <div class="cph">${s.tag === 'Live' ? '🔴' : '⏰'}</div>
+      <div class="cbody"><div><div class="cnm">${esc(s.topic)}</div><div class="cmeta" style="color:${s.tag==='Live'?'#ff6b35':'var(--mut)'}">${s.tag} • ${esc(s.startTime||'')}</div></div><div class="carrow">▶</div></div>
+    </div>`).join('');
+  } else {
+    g.innerHTML = '<div class="empty"><h3>No Live Classes</h3></div>';
   }
 }
+
 async function playLive(scheduleId, title, tag) {
-  toast('Loading...');
   const res = await apiCall(`https://studyuk.site/pw/api/get-video-url?batch_id=${W.currentBatch.id}&childId=${scheduleId}`);
-  
   if (res.success && res.url) {
     W.currentVideo = { url: res.url, title, scheduleId };
     showQModal(title, res.url);
   } else {
-    toast('Failed to load video', 'er');
+    toast('Failed to load', 'er');
   }
 }
 
@@ -1000,6 +1081,7 @@ function logout() {
   W.token = null; W.user = null;
   show('pgLogin');
   toast('Logged out', 'ok');
+  addLog('🚪 Logged out', 'info');
 }
 
 function gotoSheet() { document.getElementById('sheetOv').style.display = 'flex'; }
@@ -1019,6 +1101,8 @@ function closeNotice() {
 
 // ===== INIT =====
 window.onload = () => {
+  addLog('🚀 PW Web Player initialized', 'success');
+  
   if (CONFIG.maintenance) { document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px"><h1>🔧</h1><h2>Under Maintenance</h2><p>'+CONFIG.maintenanceMsg+'</p></div>'; return; }
   if (CONFIG.notice) {
     const seen = localStorage.getItem('pw_notice_seen');
